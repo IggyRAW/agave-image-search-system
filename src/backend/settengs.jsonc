@@ -1,0 +1,25 @@
+{
+  "elasticsearch": {
+    "host": "es01",
+    "port": 9200
+  },
+  "mapping": {
+    "mappings": {
+      "properties": {
+        "name": { "type": "text" },
+        "username": { "type": "text" },
+        "username_source": { "type": "text" },
+        "image_file_path": { "type": "text" },
+        "source": { "type": "text" },
+        "sourcename": { "type": "text" },
+        "image_source": { "type": "text" },
+        "origin_country": { "type": "text" }
+      }
+    }
+  },
+  "query": {
+    "size": 10000,
+    "query": {}
+  },
+  "excel": "./excel"
+}

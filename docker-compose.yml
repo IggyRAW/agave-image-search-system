@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    container_name: es01
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      - "TZ=Asia/Tokyo"
+    ports:
+      - 9200:9200
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es01:9200
+      - "TZ=Asia/Tokyo"
+      - I18N_LOCALE="ja-JP"
+    depends_on:
+      - es01
+
+  fastapi:
+    container_name: fastapi
+    build:
+      context: .
+      dockerfile: /dockerfiles/FastAPI/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src/backend:/app/backend
+    command:
+      ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    restart: always
+
+  web:
+    container_name: web
+    build:
+      context: .
+      dockerfile: /dockerfiles/Nginx/Dockerfile
+    ports:
+      - "81:80"
+    volumes:
+      - ./dockerfiles/Nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./src/frontend:/app/frontend
+    depends_on:
+      - fastapi
