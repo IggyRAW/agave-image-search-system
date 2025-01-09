@@ -27,7 +27,7 @@ export const getProviders = async (): Promise<ProviderModel[]> => {
     })
 }
 
-export const getSearchList = async (provider: string): Promise<CardItemModel[]> => {
+export const getSearchListByProvider = async (provider: string): Promise<CardItemModel[]> => {
   return axios
     .get(`/api/search_provider?provider=${provider}`)
     .then((res: AxiosResponse<CardItemModel[]>) => res.data.map(transformCardItem))

@@ -1,24 +1,42 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { getProviders, getSearchList, type CardItemModel } from '../../api/getProviders'
+import { getSearchList } from '@/api/search'
+import { getNamedList, type NamedModel } from '@/api/getNamedList'
+import {
+  getProviders,
+  getSearchListByProvider,
+  type CardItemModel,
+  type ProviderModel,
+} from '@/api/getProviders'
 import { MYURL } from '@/environment'
+
 const drawer = ref(false)
 const emit = defineEmits(['searchList'])
 const searchList = ref<CardItemModel[]>([])
-const providers = ref()
+const namedList = ref<NamedModel[]>([])
+const providers = ref<ProviderModel[]>([])
 
 onMounted(async () => {
   try {
+    namedList.value = await getNamedList()
     providers.value = await getProviders()
   } catch (error) {
     console.error(error)
   }
 })
 
-async function onSearchProvide(provider: string) {
-  searchList.value = await getSearchList(provider)
+async function onSearch(named: string) {
+  searchList.value = await getSearchList(named)
   emit('searchList', searchList.value)
   drawer.value = false
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+async function onSearchProvide(provider: string) {
+  searchList.value = await getSearchListByProvider(provider)
+  emit('searchList', searchList.value)
+  drawer.value = false
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
 
@@ -36,6 +54,17 @@ async function onSearchProvide(provider: string) {
 
   <v-navigation-drawer v-model="drawer" location="right" temporary>
     <v-list>
+      <v-list-group>
+        <template v-slot:activator="{ props }">
+          <v-list-item v-bind="props" title="ネームド一覧"> </v-list-item>
+        </template>
+        <v-list-item
+          v-for="named in namedList"
+          :key="named"
+          :title="named"
+          @click="onSearch(named)"
+        ></v-list-item>
+      </v-list-group>
       <v-list-group>
         <template v-slot:activator="{ props }">
           <v-list-item v-bind="props" title="提供者一覧"> </v-list-item>
