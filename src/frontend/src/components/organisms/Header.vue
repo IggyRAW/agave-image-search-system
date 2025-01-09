@@ -60,9 +60,9 @@ async function onSearchProvide(provider: string) {
         </template>
         <v-list-item
           v-for="named in namedList"
-          :key="named"
-          :title="named"
-          @click="onSearch(named)"
+          :key="named.name"
+          :title="named.name"
+          @click="onSearch(named.name)"
         ></v-list-item>
       </v-list-group>
       <v-list-group>
@@ -71,9 +71,9 @@ async function onSearchProvide(provider: string) {
         </template>
         <v-list-item
           v-for="provider in providers"
-          :key="provider"
-          :title="provider"
-          @click="onSearchProvide(provider)"
+          :key="provider.username"
+          :title="provider.username"
+          @click="onSearchProvide(provider.username)"
         ></v-list-item>
       </v-list-group>
       <a :href="MYURL" target="_blank" rel="noopener noreferrer">

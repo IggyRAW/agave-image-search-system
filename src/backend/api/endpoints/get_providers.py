@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
+from api.schemas.provider import Provider
 from manager.es_manager import ElasticsearchManager, get_elasticsearch_manager
 from query_builder.es_query_builder import ESQueryBuilder
 
@@ -18,8 +19,8 @@ def get_providers(
         response = es.search(query_builder.build())
         response = response["hits"]["hits"]
         for res in response:
-            if not res["_source"]["username"] in providers:
-                providers.append(res["_source"]["username"])
+            if not Provider(username=res["_source"]["username"]) in providers:
+                providers.append(Provider(username=res["_source"]["username"]))
 
         return providers
 

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
+from api.schemas.named import Named
 from manager.es_manager import ElasticsearchManager, get_elasticsearch_manager
 from query_builder.es_query_builder import ESQueryBuilder
 
@@ -18,8 +19,8 @@ def get_named_list(
         response = es.search(query_builder.build())
         response = response["hits"]["hits"]
         for res in response:
-            if not res["_source"]["name"] in named_list:
-                named_list.append(res["_source"]["name"])
+            if not Named(name=res["_source"]["name"]) in named_list:
+                named_list.append(Named(name=res["_source"]["name"]))
 
         return named_list
 
