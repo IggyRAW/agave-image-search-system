@@ -23,7 +23,7 @@ export const getSearchList = async (search_word: string): Promise<CardItemModel[
     })
 }
 
-const transformCardItem = (cardItem: CardItemModel): CardItemModel => {
+export const transformCardItem = (cardItem: CardItemModel): CardItemModel => {
   return {
     ...cardItem,
     username_source: `${INSTAGRAMURL}${cardItem.username_source}`,

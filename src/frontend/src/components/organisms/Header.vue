@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { getSearchList } from '@/api/search'
-import { getNamedList, type NamedModel } from '@/api/getNamedList'
+import { getNamedList, searchNamedList, type NamedModel } from '@/api/getNamedList'
 import {
   getProviders,
   getSearchListByProvider,
@@ -26,7 +25,7 @@ onMounted(async () => {
 })
 
 async function onSearch(named: string) {
-  searchList.value = await getSearchList(named)
+  searchList.value = await searchNamedList(named)
   emit('searchList', searchList.value)
   drawer.value = false
   window.scrollTo({ top: 0, behavior: 'smooth' })
