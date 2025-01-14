@@ -6,7 +6,10 @@
   "mapping": {
     "mappings": {
       "properties": {
-        "name": { "type": "text" },
+        "name": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
         "username": { "type": "text" },
         "username_source": { "type": "text" },
         "image_file_path": { "type": "text" },
