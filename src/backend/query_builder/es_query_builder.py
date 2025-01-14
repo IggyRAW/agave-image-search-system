@@ -25,5 +25,8 @@ class ESQueryBuilder:
         else:
             self.query["query"]["bool"]["should"] = query
 
+    def set_name_term(self, name: str):
+        self.query["query"]["term"] = {"name.keyword": name}
+
     def build(self):
         return self.query
