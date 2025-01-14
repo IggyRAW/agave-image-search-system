@@ -15,9 +15,9 @@ const openDialog = (item: CardItemModel) => {
 </script>
 
 <template>
-  <v-card class="mx-auto" max-width="344">
+  <v-card class="mx-auto width: 100%" max-width="344">
     <v-img
-      height="300px"
+      height="300%"
       :src="'/api/' + item.image_file_path"
       :alt="item.name"
       cover

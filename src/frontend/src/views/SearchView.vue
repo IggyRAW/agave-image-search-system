@@ -45,11 +45,11 @@ onMounted(() => {
           <v-col
             v-for="item in receivedSearchList"
             :key="item.id"
-            cols="12"
+            cols="6"
             xs="6"
             sm="6"
-            md="4"
-            lg="3"
+            md="3"
+            lg="2"
             xl="2"
           >
             <CardItem :item="item" />
