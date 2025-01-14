@@ -33,12 +33,13 @@ const onSearch = async () => {
       v-model="searchWord"
       append-inner-icon="mdi-magnify"
       density="compact"
-      label="キーワードを入力"
+      placeholder="キーワードを入力"
       variant="solo"
       hide-details
       single-line
       @click:append-inner="onSearch"
       @keypress.enter="onSearch"
-    ></v-text-field>
+    >
+    </v-text-field>
   </v-container>
 </template>
