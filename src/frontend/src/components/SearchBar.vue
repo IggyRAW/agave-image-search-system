@@ -18,26 +18,27 @@ const onSearch = async () => {
     emit('searchList', searchList.value)
   } catch (error) {
     console.error('検索エラー：', error)
+  } finally {
+    const el = document.activeElement as HTMLElement | null
+    if (el) {
+      el.blur()
+    }
   }
 }
 </script>
 
 <template>
   <v-container>
-    <v-row justify="center">
-      <v-col cols="12">
-        <v-text-field
-          v-model="searchWord"
-          append-inner-icon="mdi-magnify"
-          density="compact"
-          label="キーワードを入力"
-          variant="solo"
-          hide-details
-          single-line
-          @click:append-inner="onSearch"
-          @keydown.enter="onSearch"
-        ></v-text-field>
-      </v-col>
-    </v-row>
+    <v-text-field
+      v-model="searchWord"
+      append-inner-icon="mdi-magnify"
+      density="compact"
+      label="キーワードを入力"
+      variant="solo"
+      hide-details
+      single-line
+      @click:append-inner="onSearch"
+      @keypress.enter="onSearch"
+    ></v-text-field>
   </v-container>
 </template>
