@@ -36,7 +36,9 @@ const sortList = (list: ProviderModel[]) => {
 export const getSearchListByProvider = async (provider: string): Promise<CardItemModel[]> => {
   return axios
     .get(`/api/search_provider?provider=${provider}`)
-    .then((res: AxiosResponse<CardItemModel[]>) => res.data.map(transformCardItem))
+    .then((res: AxiosResponse<CardItemModel[]>) => {
+      return sortListByName(res.data.map(transformCardItem))
+    })
     .catch((err: AxiosError) => {
       console.error(err.message)
       throw err
@@ -50,4 +52,8 @@ const transformCardItem = (cardItem: CardItemModel): CardItemModel => {
     image_source: `${INSTAGRAMURL}/p/${cardItem.image_source}`,
     sourcename: `${INSTAGRAMURL}${cardItem.sourcename}`,
   }
+}
+
+const sortListByName = (list: CardItemModel[]): CardItemModel[] => {
+  return [...list].sort((a, b) => a.name.localeCompare(b.name, 'ja'))
 }
