@@ -20,11 +20,17 @@ export interface CardItemModel {
 export const getProviders = async (): Promise<ProviderModel[]> => {
   return axios
     .get(`/api/get/providers`)
-    .then((res: AxiosResponse<ProviderModel[]>) => res.data)
+    .then((res: AxiosResponse<ProviderModel[]>) => {
+      return sortList(res.data)
+    })
     .catch((err: AxiosError) => {
       console.error(err.message)
       throw err
     })
+}
+
+const sortList = (list: ProviderModel[]) => {
+  return [...list].sort((a, b) => a.username.localeCompare(b.username, 'ja'))
 }
 
 export const getSearchListByProvider = async (provider: string): Promise<CardItemModel[]> => {

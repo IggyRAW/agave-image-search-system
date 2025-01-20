@@ -8,11 +8,17 @@ export interface NamedModel {
 export const getNamedList = async (): Promise<NamedModel[]> => {
   return axios
     .get(`/api/get/named/list`)
-    .then((res: AxiosResponse<NamedModel[]>) => res.data)
+    .then((res: AxiosResponse<NamedModel[]>) => {
+      return sortList(res.data)
+    })
     .catch((err: AxiosError) => {
       console.error(err.message)
       throw err
     })
+}
+
+const sortList = (list: NamedModel[]) => {
+  return [...list].sort((a, b) => a.name.localeCompare(b.name, 'ja'))
 }
 
 export const searchNamedList = async (search_word: string): Promise<CardItemModel[]> => {

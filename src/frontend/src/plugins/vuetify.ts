@@ -26,7 +26,6 @@ import {
   VListItemTitle,
   VNavigationDrawer,
   VTab,
-  VSelect,
 } from 'vuetify/components'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
