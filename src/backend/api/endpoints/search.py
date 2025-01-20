@@ -81,9 +81,7 @@ def search_providers(
     try:
         if provider:
             query_builder = ESQueryBuilder()
-            query_builder.set_bool()
-            query_builder.set_should()
-            query_builder.create_search_name_query("username", provider)
+            query_builder.set_username_term(provider)
             response = es.search(query_builder.build())
             response = response["hits"]["hits"]
             search_list = [

@@ -28,5 +28,8 @@ class ESQueryBuilder:
     def set_name_term(self, name: str):
         self.query["query"]["term"] = {"name.keyword": name}
 
+    def set_username_term(self, username: str):
+        self.query["query"]["term"] = {"username.keyword": username}
+
     def build(self):
         return self.query

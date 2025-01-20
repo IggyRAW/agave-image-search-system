@@ -10,7 +10,10 @@
           "type": "text",
           "fields": { "keyword": { "type": "keyword" } }
         },
-        "username": { "type": "text" },
+        "username": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
         "username_source": { "type": "text" },
         "image_file_path": { "type": "text" },
         "source": { "type": "text" },
