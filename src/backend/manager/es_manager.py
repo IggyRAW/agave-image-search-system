@@ -10,7 +10,8 @@ INDEX_NAME = "agave_index"
 class ElasticsearchManager:
     def __init__(self):
         self.es = Elasticsearch(
-            hosts=f"http://{config.ES_HOST}:{config.ES_PORT}",
+            # hosts=f"http://{config.ES_HOST}:{config.ES_PORT}",
+            hosts=f"http://localhost:{config.ES_PORT}",
             verify_certs=False,
             timeout=30,
         )
