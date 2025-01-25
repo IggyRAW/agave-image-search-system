@@ -97,6 +97,7 @@ def search_providers(
                     origin_country=res["_source"]["origin_country"],
                 )
                 for res in response
+                if res["_source"]["is_display"]
             ]
         else:
             query_builder = ESQueryBuilder()

@@ -22,6 +22,7 @@ class CardItemModel:
         sourcename: str,
         image_source: str,
         origin_country: Optional[str] = None,
+        is_display: bool = True,
     ):
         self.name = name
         self.username = username
@@ -31,6 +32,7 @@ class CardItemModel:
         self.sourcename = sourcename
         self.image_source = image_source
         self.origin_country = origin_country
+        self.is_display = is_display
 
 
 def import_data():
@@ -52,6 +54,7 @@ def import_data():
                 sourcename=row.sourcename,
                 image_source=row.image_source,
                 origin_country=origin_country,
+                is_display=row.is_display,
             ).__dict__
 
             builder = ESQueryBuilder()
