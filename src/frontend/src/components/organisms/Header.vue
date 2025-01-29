@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { getNamedList, searchNamedList, type NamedModel } from '@/api/getNamedList'
+import { getNamedList, getSearchListByNamed, type NamedModel } from '@/api/getNamedList'
 import {
   getProviders,
   getSearchListByProvider,
@@ -8,9 +8,10 @@ import {
   type ProviderModel,
 } from '@/api/getProviders'
 import { MYURL } from '@/environment'
+import { useSearchStore } from '@/stores/searchStore'
 
+const searchStore = useSearchStore()
 const drawer = ref(false)
-const emit = defineEmits(['searchList'])
 const searchList = ref<CardItemModel[]>([])
 const namedList = ref<NamedModel[]>([])
 const providers = ref<ProviderModel[]>([])
@@ -24,16 +25,21 @@ onMounted(async () => {
   }
 })
 
-async function onSearch(named: string) {
-  searchList.value = await searchNamedList(named)
-  emit('searchList', searchList.value)
+async function onSearchByNamed(named: string) {
+  searchStore.setSearchWord(named)
+  searchStore.setSearchType(1)
+  searchList.value = await getSearchListByNamed(named)
+  searchStore.searchList = searchList.value
   drawer.value = false
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-async function onSearchProvide(provider: string) {
+async function onSearchByProvider(provider: string) {
+  searchStore.setSearchWord(provider)
+  searchStore.setSearchType(2)
   searchList.value = await getSearchListByProvider(provider)
-  emit('searchList', searchList.value)
+  searchStore.searchList = searchList.value
+
   drawer.value = false
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -61,7 +67,7 @@ async function onSearchProvide(provider: string) {
           v-for="named in namedList"
           :key="named.name"
           :title="named.name"
-          @click="onSearch(named.name)"
+          @click="onSearchByNamed(named.name)"
         ></v-list-item>
       </v-list-group>
       <v-list-group>
@@ -72,7 +78,7 @@ async function onSearchProvide(provider: string) {
           v-for="provider in providers"
           :key="provider.username"
           :title="provider.username"
-          @click="onSearchProvide(provider.username)"
+          @click="onSearchByProvider(provider.username)"
         ></v-list-item>
       </v-list-group>
       <a :href="MYURL" target="_blank" rel="noopener noreferrer">

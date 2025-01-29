@@ -36,50 +36,39 @@ def get_named_list(
 @router.get("/get/named/search")
 def search_named(
     search_word: str,
+    page: int = 1,
+    limit: int = 20,
     es: ElasticsearchManager = Depends(get_elasticsearch_manager),
 ):
     try:
+        offset = (page - 1) * limit
+        query_builder = ESQueryBuilder()
         if search_word:
-            query_builder = ESQueryBuilder()
             query_builder.set_name_term(search_word)
-            response = es.search(query_builder.build())
-            response = response["hits"]["hits"]
-            if len(response):
-                search_list = [
-                    CardItemModel(
-                        id=res["_id"],
-                        name=res["_source"]["name"],
-                        username=res["_source"]["username"],
-                        username_source=res["_source"]["username_source"],
-                        image_file_path=res["_source"]["image_file_path"],
-                        source=res["_source"]["source"],
-                        sourcename=res["_source"]["sourcename"],
-                        image_source=res["_source"]["image_source"],
-                        origin_country=res["_source"]["origin_country"],
-                    )
-                    for res in response
-                ]
-            else:
-                search_list = []
         else:
-            query_builder = ESQueryBuilder()
             query_builder.match_all()
-            response = es.search(query_builder.build())
-            response = response["hits"]["hits"]
-            search_list = [
-                CardItemModel(
-                    id=res["_id"],
-                    name=res["_source"]["name"],
-                    username=res["_source"]["username"],
-                    username_source=res["_source"]["username_source"],
-                    image_file_path=res["_source"]["image_file_path"],
-                    source=res["_source"]["source"],
-                    sourcename=res["_source"]["sourcename"],
-                    image_source=res["_source"]["image_source"],
-                    origin_country=res["_source"]["origin_country"],
-                )
-                for res in response
-            ]
+
+        query = query_builder.build()
+        query["from"] = offset
+        query["size"] = limit
+
+        response = es.search(query)
+        response = response["hits"]["hits"]
+
+        search_list = [
+            CardItemModel(
+                id=res["_id"],
+                name=res["_source"]["name"],
+                username=res["_source"]["username"],
+                username_source=res["_source"]["username_source"],
+                image_file_path=res["_source"]["image_file_path"],
+                source=res["_source"]["source"],
+                sourcename=res["_source"]["sourcename"],
+                image_source=res["_source"]["image_source"],
+                origin_country=res["_source"]["origin_country"],
+            )
+            for res in response
+        ]
         return search_list
 
     except Exception:

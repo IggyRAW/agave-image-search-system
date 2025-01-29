@@ -33,9 +33,13 @@ const sortList = (list: ProviderModel[]) => {
   return [...list].sort((a, b) => a.username.localeCompare(b.username, 'ja'))
 }
 
-export const getSearchListByProvider = async (provider: string): Promise<CardItemModel[]> => {
+export const getSearchListByProvider = async (
+  provider: string,
+  page: number = 1,
+  limit: number = 20,
+): Promise<CardItemModel[]> => {
   return axios
-    .get(`/api/search_provider?provider=${provider}`)
+    .get(`/api/search_provider?provider=${provider}&page=${page}&limit=${limit}`)
     .then((res: AxiosResponse<CardItemModel[]>) => {
       return sortListByName(res.data.map(transformCardItem))
     })

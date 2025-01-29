@@ -13,9 +13,23 @@ export interface CardItemModel {
   origin_country: string
 }
 
-export const getSearchList = async (search_word: string): Promise<CardItemModel[]> => {
+// export const getSearchList = async (search_word: string): Promise<CardItemModel[]> => {
+//   return axios
+//     .get(`/api/search?search_word=${search_word}`)
+//     .then((res: AxiosResponse<CardItemModel[]>) => res.data.map(transformCardItem))
+//     .catch((err: AxiosError) => {
+//       console.error(err.message)
+//       throw err
+//     })
+// }
+
+export const getSearchList = async (
+  search_word: string,
+  page: number = 1,
+  limit: number = 20,
+): Promise<CardItemModel[]> => {
   return axios
-    .get(`/api/search?search_word=${search_word}`)
+    .get(`/api/search?search_word=${search_word}&page=${page}&limit=${limit}`)
     .then((res: AxiosResponse<CardItemModel[]>) => res.data.map(transformCardItem))
     .catch((err: AxiosError) => {
       console.error(err.message)

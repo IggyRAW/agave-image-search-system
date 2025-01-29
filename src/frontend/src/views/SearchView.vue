@@ -4,16 +4,11 @@ import { onMounted, ref } from 'vue'
 import Header from '../components/organisms/Header.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import CardItem from '@/components/CardItem.vue'
-import type { CardItemModel } from '../api/search'
+import { useSearchStore } from '@/stores/searchStore'
 
-// データ受け取り
-const receivedSearchList = ref<CardItemModel[]>([])
+const searchStore = useSearchStore()
 
 const showScrollButton = ref<boolean>(false)
-
-const handleSearchList = (list: CardItemModel[]) => {
-  receivedSearchList.value = list
-}
 
 const handleScroll = () => {
   showScrollButton.value = window.scrollY > 300
@@ -27,23 +22,27 @@ const scrollToTop = () => {
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
 })
+
+const loadMore = () => {
+  searchStore.nextPage()
+}
 </script>
 
 <template>
   <v-app>
-    <Header @searchList="handleSearchList" />
+    <Header />
     <v-main>
       <!-- 検索バー -->
-      <SearchBar @searchList="handleSearchList" />
+      <SearchBar />
 
       <!-- アイテム -->
       <div
-        v-if="receivedSearchList.length > 0"
+        v-if="searchStore.searchList.length > 0"
         style="max-width: 95%; margin: 0 auto; padding: 16px"
       >
         <v-row>
           <v-col
-            v-for="item in receivedSearchList"
+            v-for="item in searchStore.searchList"
             :key="item.id"
             cols="6"
             xs="6"
@@ -59,6 +58,9 @@ onMounted(() => {
       <div v-else class="no-results">
         <p>該当するアガベがありませんでした</p>
         <p>キーワードを変更して再検索してください</p>
+      </div>
+      <div class="text-center">
+        <v-btn @click="loadMore" variant="text">もっとアガベを見る</v-btn>
       </div>
       <!-- トップへ移動ボタン -->
       <v-btn v-if="showScrollButton" class="scroll-to-top" @click="scrollToTop" icon>
