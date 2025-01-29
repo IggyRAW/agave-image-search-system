@@ -14,6 +14,12 @@ const onSearch = () => {
   searchStore.setSearchWord(searchWord.value)
   searchStore.setSearchType(0)
   searchStore.fetchSearchList()
+
+  // 検索実行時にキーボードを閉じる
+  const el = document.activeElement as HTMLElement | null
+  if (el) {
+    el.blur()
+  }
 }
 </script>
 
