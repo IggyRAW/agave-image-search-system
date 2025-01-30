@@ -44,7 +44,6 @@ async function onSearchByProvider(provider: string) {
         <img width="60px" height="60px" src="../../assets/logo.png" alt="logo" />
       </a>
     </v-app-bar-title>
-    <v-spacer></v-spacer>
     <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
   </v-app-bar>
 
