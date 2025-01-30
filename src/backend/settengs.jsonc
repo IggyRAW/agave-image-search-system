@@ -19,7 +19,8 @@
         "source": { "type": "text" },
         "sourcename": { "type": "text" },
         "image_source": { "type": "text" },
-        "origin_country": { "type": "text" }
+        "origin_country": { "type": "text" },
+        "is_display": { "type": "boolean" }
       }
     }
   },

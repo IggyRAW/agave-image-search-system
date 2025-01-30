@@ -26,6 +26,7 @@ import {
   VListItemTitle,
   VNavigationDrawer,
   VTab,
+  VPagination,
 } from 'vuetify/components'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
@@ -60,6 +61,7 @@ const vuetify = createVuetify({
     VListItemTitle,
     VTabs,
     VTab,
+    VPagination,
   },
   icons: {
     defaultSet: 'mdi',

@@ -1,28 +1,22 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { getSearchList, type CardItemModel } from '../api/search'
+import { onMounted } from 'vue'
+import { useSearchStore } from '@/stores/searchStore'
 
-const emit = defineEmits(['searchList'])
-
-const searchWord = ref<string>('')
-const searchList = ref<CardItemModel[]>([])
+const searchStore = useSearchStore()
 
 onMounted(() => {
   onSearch()
 })
 
-const onSearch = async () => {
-  try {
-    console.log(`検索ワード:${searchWord.value}`)
-    searchList.value = await getSearchList(searchWord.value)
-    emit('searchList', searchList.value)
-  } catch (error) {
-    console.error('検索エラー：', error)
-  } finally {
-    const el = document.activeElement as HTMLElement | null
-    if (el) {
-      el.blur()
-    }
+const onSearch = () => {
+  searchStore.setSearchWord(searchStore.searchWord)
+  searchStore.setSearchType(0)
+  searchStore.fetchSearchList()
+
+  // 検索実行時にキーボードを閉じる
+  const el = document.activeElement as HTMLElement | null
+  if (el) {
+    el.blur()
   }
 }
 </script>
@@ -30,7 +24,7 @@ const onSearch = async () => {
 <template>
   <v-container>
     <v-text-field
-      v-model="searchWord"
+      v-model="searchStore.searchWord"
       append-inner-icon="mdi-magnify"
       density="compact"
       placeholder="キーワードを入力"
