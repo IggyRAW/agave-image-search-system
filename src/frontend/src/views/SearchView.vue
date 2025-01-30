@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import Header from '../components/organisms/Header.vue'
 import SearchBar from '@/components/SearchBar.vue'
 import CardItem from '@/components/CardItem.vue'
 import { useSearchStore } from '@/stores/searchStore'
+import { useDisplay } from 'vuetify'
 
 const searchStore = useSearchStore()
 
@@ -25,7 +26,17 @@ onMounted(() => {
 
 const loadMore = () => {
   searchStore.nextPage()
+  scrollToTop()
 }
+
+const { xs, sm, md } = useDisplay()
+
+const paginationVisible = computed(() => {
+  if (xs.value) return 3
+  if (sm.value) return 5
+  if (md.value) return 7
+  return 10
+})
 </script>
 
 <template>
@@ -59,9 +70,19 @@ const loadMore = () => {
         <p>該当するアガベがありませんでした</p>
         <p>キーワードを変更して再検索してください</p>
       </div>
-      <div class="text-center">
-        <v-btn @click="loadMore" variant="text">もっとアガベを見る</v-btn>
+
+      <!-- ページネーション -->
+      <div class="pagination-container">
+        <v-pagination
+          v-model="searchStore.currentPage"
+          class="my-1"
+          :length="searchStore.totalPage"
+          :total-visible="paginationVisible"
+          style="color: darkgreen"
+          @click="loadMore"
+        ></v-pagination>
       </div>
+
       <!-- トップへ移動ボタン -->
       <v-btn v-if="showScrollButton" class="scroll-to-top" @click="scrollToTop" icon>
         <v-icon>mdi-arrow-up</v-icon>
@@ -91,5 +112,11 @@ const loadMore = () => {
 }
 .no-results p {
   margin: 3px 0;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
 }
 </style>

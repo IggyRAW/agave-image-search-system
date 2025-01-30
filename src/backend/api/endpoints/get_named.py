@@ -37,7 +37,7 @@ def get_named_list(
 def search_named(
     search_word: str,
     page: int = 1,
-    limit: int = 20,
+    limit: int = 18,
     es: ElasticsearchManager = Depends(get_elasticsearch_manager),
 ):
     try:
@@ -53,6 +53,7 @@ def search_named(
         query["size"] = limit
 
         response = es.search(query)
+        total = response["hits"]["total"]["value"]
         response = response["hits"]["hits"]
 
         search_list = [
@@ -69,7 +70,7 @@ def search_named(
             )
             for res in response
         ]
-        return search_list
+        return {"total": total, "search_list": search_list}
 
     except Exception:
         import traceback

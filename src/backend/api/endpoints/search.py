@@ -12,7 +12,7 @@ router = APIRouter()
 async def search(
     search_word: str,
     page: int = 1,
-    limit: int = 20,
+    limit: int = 18,
     es: ElasticsearchManager = Depends(get_elasticsearch_manager),
 ):
     """
@@ -33,6 +33,7 @@ async def search(
         query["size"] = limit
 
         response = es.search(query)
+        total = response["hits"]["total"]["value"]
         response = response["hits"]["hits"]
 
         search_list = [
@@ -50,7 +51,7 @@ async def search(
             for res in response
         ]
 
-        return search_list
+        return {"total": total, "search_list": search_list}
 
     except Exception:
         import traceback
@@ -64,7 +65,7 @@ async def search(
 def search_providers(
     provider: str,
     page: int = 1,
-    limit: int = 20,
+    limit: int = 18,
     es: ElasticsearchManager = Depends(get_elasticsearch_manager),
 ):
     """
@@ -84,6 +85,7 @@ def search_providers(
         query["size"] = limit
 
         response = es.search(query)
+        total = response["hits"]["total"]["value"]
         response = response["hits"]["hits"]
 
         search_list = [
@@ -100,7 +102,7 @@ def search_providers(
             )
             for res in response
         ]
-        return search_list
+        return {"total": total, "search_list": search_list}
 
     except Exception:
         import traceback

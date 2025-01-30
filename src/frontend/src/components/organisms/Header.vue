@@ -1,18 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { getNamedList, getSearchListByNamed, type NamedModel } from '@/api/getNamedList'
-import {
-  getProviders,
-  getSearchListByProvider,
-  type CardItemModel,
-  type ProviderModel,
-} from '@/api/getProviders'
+import { getProviders, getSearchListByProvider, type ProviderModel } from '@/api/getProviders'
 import { MYURL } from '@/environment'
 import { useSearchStore } from '@/stores/searchStore'
 
 const searchStore = useSearchStore()
 const drawer = ref(false)
-const searchList = ref<CardItemModel[]>([])
 const namedList = ref<NamedModel[]>([])
 const providers = ref<ProviderModel[]>([])
 
@@ -28,8 +22,9 @@ onMounted(async () => {
 async function onSearchByNamed(named: string) {
   searchStore.setSearchWord(named)
   searchStore.setSearchType(1)
-  searchList.value = await getSearchListByNamed(named)
-  searchStore.searchList = searchList.value
+  const data = await getSearchListByNamed(named)
+  searchStore.searchList = data.search_list
+  searchStore.setTotalPage(Math.ceil(data.total / searchStore.limit))
   drawer.value = false
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -37,16 +32,16 @@ async function onSearchByNamed(named: string) {
 async function onSearchByProvider(provider: string) {
   searchStore.setSearchWord(provider)
   searchStore.setSearchType(2)
-  searchList.value = await getSearchListByProvider(provider)
-  searchStore.searchList = searchList.value
-
+  const data = await getSearchListByProvider(provider)
+  searchStore.searchList = data.search_list
+  searchStore.setTotalPage(Math.ceil(data.total / searchStore.limit))
   drawer.value = false
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
 
 <template>
-  <v-app-bar scroll-behavior="hide fade-image" scroll-threshold="228">
+  <v-app-bar scroll-threshold="228">
     <v-app-bar-title>
       <img width="250px" height="50px" src="../../assets/title.png" alt="title" />
       <a :href="MYURL" target="_blank" rel="noopener noreferrer">

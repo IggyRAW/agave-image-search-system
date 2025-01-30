@@ -36,12 +36,15 @@ const sortList = (list: ProviderModel[]) => {
 export const getSearchListByProvider = async (
   provider: string,
   page: number = 1,
-  limit: number = 20,
-): Promise<CardItemModel[]> => {
+  limit: number = 18,
+): Promise<{ total: number; search_list: CardItemModel[] }> => {
   return axios
     .get(`/api/search_provider?provider=${provider}&page=${page}&limit=${limit}`)
-    .then((res: AxiosResponse<CardItemModel[]>) => {
-      return sortListByName(res.data.map(transformCardItem))
+    .then((res: AxiosResponse<{ total: number; search_list: CardItemModel[] }>) => {
+      return {
+        total: res.data.total,
+        search_list: sortListByName(res.data.search_list.map(transformCardItem)),
+      }
     })
     .catch((err: AxiosError) => {
       console.error(err.message)
