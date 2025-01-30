@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import { useSearchStore } from '@/stores/searchStore'
 
 const searchStore = useSearchStore()
-
-const searchWord = ref<string>('')
 
 onMounted(() => {
   onSearch()
 })
 
 const onSearch = () => {
-  searchStore.setSearchWord(searchWord.value)
+  searchStore.setSearchWord(searchStore.searchWord)
   searchStore.setSearchType(0)
   searchStore.fetchSearchList()
 
@@ -26,7 +24,7 @@ const onSearch = () => {
 <template>
   <v-container>
     <v-text-field
-      v-model="searchWord"
+      v-model="searchStore.searchWord"
       append-inner-icon="mdi-magnify"
       density="compact"
       placeholder="キーワードを入力"
