@@ -31,37 +31,14 @@ export const useSearchStore = defineStore('search', {
       try {
         console.log(`検索ワード: ${this.searchWord}, ページ: ${this.currentPage}`)
 
-        const data = await getSearchList(this.searchWord, this.currentPage, this.limit)
-
-        // トータルページ数の計算
-        this.totalPage = Math.ceil(data.total / this.limit)
-
-        this.searchList = data.search_list
-      } catch (error) {
-        console.error('検索エラー：', error)
-      }
-    },
-
-    async fetchSearchListByNamed() {
-      try {
-        console.log(`検索ワード: ${this.searchWord}, ページ: ${this.currentPage}`)
-
-        const data = await getSearchListByNamed(this.searchWord, this.currentPage, this.limit)
-
-        // トータルページ数の計算
-        this.totalPage = Math.ceil(data.total / this.limit)
-
-        this.searchList = data.search_list
-      } catch (error) {
-        console.error('検索エラー：', error)
-      }
-    },
-
-    async fetchSearchListByProvider() {
-      try {
-        console.log(`検索ワード: ${this.searchWord}, ページ: ${this.currentPage}`)
-
-        const data = await getSearchListByProvider(this.searchWord, this.currentPage, this.limit)
+        let data
+        if (this.searchType === 0) {
+          data = await getSearchList(this.searchWord, this.currentPage, this.limit)
+        } else if (this.searchType === 1) {
+          data = await getSearchListByNamed(this.searchWord, this.currentPage, this.limit)
+        } else {
+          data = await getSearchListByProvider(this.searchWord, this.currentPage, this.limit)
+        }
 
         // トータルページ数の計算
         this.totalPage = Math.ceil(data.total / this.limit)
@@ -73,13 +50,7 @@ export const useSearchStore = defineStore('search', {
     },
 
     nextPage() {
-      if (this.searchType === 0) {
-        this.fetchSearchList()
-      } else if (this.searchType === 1) {
-        this.fetchSearchListByNamed()
-      } else {
-        this.fetchSearchListByProvider()
-      }
+      this.fetchSearchList()
     },
   },
 })

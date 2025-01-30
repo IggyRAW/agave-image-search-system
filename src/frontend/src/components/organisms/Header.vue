@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { getNamedList, getSearchListByNamed, type NamedModel } from '@/api/getNamedList'
-import { getProviders, getSearchListByProvider, type ProviderModel } from '@/api/getProviders'
+import { getNamedList, type NamedModel } from '@/api/getNamedList'
+import { getProviders, type ProviderModel } from '@/api/getProviders'
 import { MYURL } from '@/environment'
 import { useSearchStore } from '@/stores/searchStore'
 
@@ -22,9 +22,7 @@ onMounted(async () => {
 async function onSearchByNamed(named: string) {
   searchStore.setSearchWord(named)
   searchStore.setSearchType(1)
-  const data = await getSearchListByNamed(named)
-  searchStore.searchList = data.search_list
-  searchStore.setTotalPage(Math.ceil(data.total / searchStore.limit))
+  searchStore.fetchSearchList()
   drawer.value = false
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -32,9 +30,7 @@ async function onSearchByNamed(named: string) {
 async function onSearchByProvider(provider: string) {
   searchStore.setSearchWord(provider)
   searchStore.setSearchType(2)
-  const data = await getSearchListByProvider(provider)
-  searchStore.searchList = data.search_list
-  searchStore.setTotalPage(Math.ceil(data.total / searchStore.limit))
+  searchStore.fetchSearchList()
   drawer.value = false
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
