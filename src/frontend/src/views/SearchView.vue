@@ -94,7 +94,7 @@ const paginationVisible = computed(() => {
 <style scoped>
 .scroll-to-top {
   position: fixed;
-  bottom: 20px;
+  bottom: 70px;
   right: 20px;
   background-color: #28702c;
   color: white;
