@@ -52,5 +52,9 @@ export const useSearchStore = defineStore('search', {
     nextPage() {
       this.fetchSearchList()
     },
+
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    },
   },
 })
