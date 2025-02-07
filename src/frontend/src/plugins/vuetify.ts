@@ -27,6 +27,8 @@ import {
   VNavigationDrawer,
   VTab,
   VPagination,
+  VFileInput,
+  VCheckbox,
 } from 'vuetify/components'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
@@ -62,6 +64,8 @@ const vuetify = createVuetify({
     VTabs,
     VTab,
     VPagination,
+    VFileInput,
+    VCheckbox,
   },
   icons: {
     defaultSet: 'mdi',
