@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 from typing import Optional
 
@@ -73,6 +74,10 @@ async def post_agave_obj(
     try:
         if not await save_and_convert_image(image_file):
             return False
+
+        match = re.search(r"instagram.com/p/([^/?]+)", image_source)
+        if match:
+            image_source = match.group(1)
 
         doc = AgaveObjModel(
             name=name,
