@@ -10,6 +10,6 @@ class AgaveObjModel(BaseModel):
     image_file_path: str
     source: str
     sourcename: str
-    image_source: str
+    image_source: Optional[str]
     origin_country: Optional[str] = None
     is_display: bool
