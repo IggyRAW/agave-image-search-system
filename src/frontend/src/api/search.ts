@@ -33,10 +33,20 @@ export const getSearchList = async (
 }
 
 export const transformCardItem = (cardItem: CardItemModel): CardItemModel => {
-  return {
-    ...cardItem,
-    username_source: `${INSTAGRAMURL}${cardItem.username_source}`,
-    image_source: `${INSTAGRAMURL}/p/${cardItem.image_source}`,
-    sourcename: `${INSTAGRAMURL}${cardItem.sourcename}`,
+  // インスタポストがNoneの場合、インスタプロフィールに飛ぶように変換
+  if (cardItem.image_source) {
+    return {
+      ...cardItem,
+      username_source: `${INSTAGRAMURL}${cardItem.username_source}`,
+      image_source: `${INSTAGRAMURL}/p/${cardItem.image_source}`,
+      sourcename: `${INSTAGRAMURL}${cardItem.sourcename}`,
+    }
+  } else {
+    return {
+      ...cardItem,
+      username_source: `${INSTAGRAMURL}${cardItem.username_source}`,
+      image_source: `${INSTAGRAMURL}${cardItem.username_source}`,
+      sourcename: `${INSTAGRAMURL}${cardItem.sourcename}`,
+    }
   }
 }
