@@ -107,6 +107,8 @@ async def post_agave_obj(
     except Exception:
         import traceback
 
+        print(traceback.format_exc())
+
         JSONResponse(
             status_code=500, content={"message": str(traceback.format_exc())}
         )
