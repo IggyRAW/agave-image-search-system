@@ -1,20 +1,8 @@
 import axios, { AxiosError, type AxiosResponse } from 'axios'
-import { INSTAGRAMURL } from '@/environment'
+import { type CardItemModel, transformCardItem } from './search'
 
 export interface ProviderModel {
   username: string
-}
-
-export interface CardItemModel {
-  id: string
-  name: string
-  username: string
-  username_source: string
-  image_file_path: string
-  source: string
-  sourcename: string
-  image_source: string
-  origin_country: string
 }
 
 export const getProviders = async (): Promise<ProviderModel[]> => {
@@ -33,25 +21,23 @@ const sortList = (list: ProviderModel[]) => {
   return [...list].sort((a, b) => a.username.localeCompare(b.username, 'ja'))
 }
 
-export const getSearchListByProvider = async (provider: string): Promise<CardItemModel[]> => {
+export const getSearchListByProvider = async (
+  provider: string,
+  page: number = 1,
+  limit: number = 18,
+): Promise<{ total: number; search_list: CardItemModel[] }> => {
   return axios
-    .get(`/api/search_provider?provider=${provider}`)
-    .then((res: AxiosResponse<CardItemModel[]>) => {
-      return sortListByName(res.data.map(transformCardItem))
+    .get(`/api/search_provider?provider=${provider}&page=${page}&limit=${limit}`)
+    .then((res: AxiosResponse<{ total: number; search_list: CardItemModel[] }>) => {
+      return {
+        total: res.data.total,
+        search_list: sortListByName(res.data.search_list.map(transformCardItem)),
+      }
     })
     .catch((err: AxiosError) => {
       console.error(err.message)
       throw err
     })
-}
-
-const transformCardItem = (cardItem: CardItemModel): CardItemModel => {
-  return {
-    ...cardItem,
-    username_source: `${INSTAGRAMURL}${cardItem.username_source}`,
-    image_source: `${INSTAGRAMURL}/p/${cardItem.image_source}`,
-    sourcename: `${INSTAGRAMURL}${cardItem.sourcename}`,
-  }
 }
 
 const sortListByName = (list: CardItemModel[]): CardItemModel[] => {

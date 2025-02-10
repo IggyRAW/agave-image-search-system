@@ -13,10 +13,19 @@ export interface CardItemModel {
   origin_country: string
 }
 
-export const getSearchList = async (search_word: string): Promise<CardItemModel[]> => {
+export const getSearchList = async (
+  search_word: string,
+  page: number = 1,
+  limit: number = 18,
+): Promise<{ total: number; search_list: CardItemModel[] }> => {
   return axios
-    .get(`/api/search?search_word=${search_word}`)
-    .then((res: AxiosResponse<CardItemModel[]>) => res.data.map(transformCardItem))
+    .get(`/api/search?search_word=${search_word}&page=${page}&limit=${limit}`)
+    .then((res: AxiosResponse<{ total: number; search_list: CardItemModel[] }>) => {
+      return {
+        total: res.data.total,
+        search_list: res.data.search_list.map(transformCardItem),
+      }
+    })
     .catch((err: AxiosError) => {
       console.error(err.message)
       throw err
@@ -24,10 +33,20 @@ export const getSearchList = async (search_word: string): Promise<CardItemModel[
 }
 
 export const transformCardItem = (cardItem: CardItemModel): CardItemModel => {
-  return {
-    ...cardItem,
-    username_source: `${INSTAGRAMURL}${cardItem.username_source}`,
-    image_source: `${INSTAGRAMURL}/p/${cardItem.image_source}`,
-    sourcename: `${INSTAGRAMURL}${cardItem.sourcename}`,
+  // インスタポストがNoneの場合、インスタプロフィールに飛ぶように変換
+  if (cardItem.image_source) {
+    return {
+      ...cardItem,
+      username_source: `${INSTAGRAMURL}${cardItem.username_source}`,
+      image_source: `${INSTAGRAMURL}/p/${cardItem.image_source}`,
+      sourcename: `${INSTAGRAMURL}${cardItem.sourcename}`,
+    }
+  } else {
+    return {
+      ...cardItem,
+      username_source: `${INSTAGRAMURL}${cardItem.username_source}`,
+      image_source: `${INSTAGRAMURL}${cardItem.username_source}`,
+      sourcename: `${INSTAGRAMURL}${cardItem.sourcename}`,
+    }
   }
 }

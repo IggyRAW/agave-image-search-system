@@ -22,6 +22,7 @@ class CardItemModel:
         sourcename: str,
         image_source: str,
         origin_country: Optional[str] = None,
+        is_display: bool = True,
     ):
         self.name = name
         self.username = username
@@ -31,17 +32,27 @@ class CardItemModel:
         self.sourcename = sourcename
         self.image_source = image_source
         self.origin_country = origin_country
+        self.is_display = is_display
 
 
 def import_data():
     try:
         df = _load_excel(_get_excel_file(ConfigManager().EXCEL))
         for row in df.itertuples():
+            # 原産国がNaNの場合Noneに変換
             origin_country = (
                 None
                 if isinstance(row.origin_country, float)
                 and math.isnan(row.origin_country)
                 else row.origin_country
+            )
+
+            # image_sourceがNaNの場合Noneに変換
+            image_source = (
+                None
+                if isinstance(row.image_source, float)
+                and math.isnan(row.image_source)
+                else row.image_source
             )
             doc = CardItemModel(
                 name=row.name,
@@ -50,8 +61,9 @@ def import_data():
                 image_file_path=row.image_file_path,
                 source=row.source,
                 sourcename=row.sourcename,
-                image_source=row.image_source,
+                image_source=image_source,
                 origin_country=origin_country,
+                is_display=row.is_display,
             ).__dict__
 
             builder = ESQueryBuilder()

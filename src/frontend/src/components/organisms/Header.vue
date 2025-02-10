@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { getNamedList, searchNamedList, type NamedModel } from '@/api/getNamedList'
-import {
-  getProviders,
-  getSearchListByProvider,
-  type CardItemModel,
-  type ProviderModel,
-} from '@/api/getProviders'
+import { getNamedList, type NamedModel } from '@/api/getNamedList'
+import { getProviders, type ProviderModel } from '@/api/getProviders'
 import { MYURL } from '@/environment'
+import { useSearchStore } from '@/stores/searchStore'
 
+const searchStore = useSearchStore()
 const drawer = ref(false)
-const emit = defineEmits(['searchList'])
-const searchList = ref<CardItemModel[]>([])
 const namedList = ref<NamedModel[]>([])
 const providers = ref<ProviderModel[]>([])
 
@@ -24,30 +19,31 @@ onMounted(async () => {
   }
 })
 
-async function onSearch(named: string) {
-  searchList.value = await searchNamedList(named)
-  emit('searchList', searchList.value)
+async function onSearchByNamed(named: string) {
+  searchStore.setSearchWord(named)
+  searchStore.setSearchType(1)
+  searchStore.fetchSearchList()
   drawer.value = false
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-async function onSearchProvide(provider: string) {
-  searchList.value = await getSearchListByProvider(provider)
-  emit('searchList', searchList.value)
+async function onSearchByProvider(provider: string) {
+  searchStore.setSearchWord(provider)
+  searchStore.setSearchType(2)
+  searchStore.fetchSearchList()
   drawer.value = false
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
 
 <template>
-  <v-app-bar scroll-behavior="hide fade-image" scroll-threshold="228">
+  <v-app-bar scroll-threshold="228">
     <v-app-bar-title>
       <img width="250px" height="50px" src="../../assets/title.png" alt="title" />
       <a :href="MYURL" target="_blank" rel="noopener noreferrer">
         <img width="60px" height="60px" src="../../assets/logo.png" alt="logo" />
       </a>
     </v-app-bar-title>
-    <v-spacer></v-spacer>
     <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
   </v-app-bar>
 
@@ -61,7 +57,7 @@ async function onSearchProvide(provider: string) {
           v-for="named in namedList"
           :key="named.name"
           :title="named.name"
-          @click="onSearch(named.name)"
+          @click="onSearchByNamed(named.name)"
         ></v-list-item>
       </v-list-group>
       <v-list-group>
@@ -72,7 +68,7 @@ async function onSearchProvide(provider: string) {
           v-for="provider in providers"
           :key="provider.username"
           :title="provider.username"
-          @click="onSearchProvide(provider.username)"
+          @click="onSearchByProvider(provider.username)"
         ></v-list-item>
       </v-list-group>
       <a :href="MYURL" target="_blank" rel="noopener noreferrer">
