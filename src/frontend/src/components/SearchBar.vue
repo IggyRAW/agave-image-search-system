@@ -1,12 +1,52 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 import { useSearchStore } from '@/stores/searchStore'
+import type { NamedModel } from '@/api/getNamedList'
 
+const showMenu = ref(false)
 const searchStore = useSearchStore()
+const suggestions = ref<NamedModel[]>([])
 
 onMounted(() => {
   onSearch()
+  suggestions.value = searchStore.namedList
+  window.addEventListener('scroll', handleScroll)
 })
+
+// コンポーネントがアンマウントされる前にリスナーを削除
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
+
+watch(
+  () => searchStore.namedList,
+  (newList) => {
+    suggestions.value = newList
+  },
+)
+
+const filteredSuggestions = computed(() =>
+  searchStore.searchWord
+    ? suggestions.value.filter((item) => item.name.includes(searchStore.searchWord))
+    : [],
+)
+
+const selectSuggestion = (suggestion: string) => {
+  searchStore.searchWord = suggestion
+  onSearch()
+  showMenu.value = false
+}
+
+const hideMenu = () => {
+  setTimeout(() => (showMenu.value = false), 200)
+}
+
+// スクロールイベントでメニューを閉じる
+const handleScroll = () => {
+  if (showMenu.value) {
+    showMenu.value = false
+  }
+}
 
 const onSearch = () => {
   searchStore.setSearchWord(searchStore.searchWord)
@@ -33,7 +73,20 @@ const onSearch = () => {
       single-line
       @click:append-inner="onSearch"
       @keypress.enter="onSearch"
+      @focus="showMenu = true"
+      @blur="hideMenu"
     >
     </v-text-field>
+    <v-menu v-model="showMenu" activator="parent" offset-y open-on-hover>
+      <v-list v-if="filteredSuggestions.length" dense style="max-height: 200px; overflow-y: auto">
+        <v-list-item
+          v-for="suggestion in filteredSuggestions"
+          :key="suggestion.name"
+          @click="selectSuggestion(suggestion.name)"
+        >
+          <v-list-item-title>{{ suggestion.name }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </v-container>
 </template>

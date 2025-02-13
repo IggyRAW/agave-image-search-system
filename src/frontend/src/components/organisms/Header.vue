@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { getNamedList, type NamedModel } from '@/api/getNamedList'
+import { getNamedList } from '@/api/getNamedList'
 import { getProviders, type ProviderModel } from '@/api/getProviders'
 import { MYURL } from '@/environment'
 import { useSearchStore } from '@/stores/searchStore'
 
 const searchStore = useSearchStore()
 const drawer = ref(false)
-const namedList = ref<NamedModel[]>([])
 const providers = ref<ProviderModel[]>([])
 
 onMounted(async () => {
   try {
-    namedList.value = await getNamedList()
+    searchStore.namedList = await getNamedList()
     providers.value = await getProviders()
   } catch (error) {
     console.error(error)
@@ -54,7 +53,7 @@ async function onSearchByProvider(provider: string) {
           <v-list-item v-bind="props" title="ネームド一覧"> </v-list-item>
         </template>
         <v-list-item
-          v-for="named in namedList"
+          v-for="named in searchStore.namedList"
           :key="named.name"
           :title="named.name"
           @click="onSearchByNamed(named.name)"
