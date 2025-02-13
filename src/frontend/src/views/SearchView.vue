@@ -32,6 +32,9 @@ onMounted(() => {
         v-if="searchStore.searchList.length > 0"
         style="max-width: 95%; margin: 0 auto; padding: 16px"
       >
+        <div v-if="searchStore.searchType == 0">
+          <p>※部分一致検索なので他ネームドも含みます</p>
+        </div>
         <v-row>
           <v-col
             v-for="item in searchStore.searchList"
