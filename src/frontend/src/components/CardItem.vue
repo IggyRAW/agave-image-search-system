@@ -22,6 +22,7 @@ const openDialog = (item: CardItemModel) => {
       :alt="item.name"
       cover
       @click="openDialog(item)"
+      lazy
     ></v-img>
     <v-card-title class="responsive-title">アガベ {{ item.name }}</v-card-title>
     <v-card-subtitle
@@ -51,7 +52,7 @@ const openDialog = (item: CardItemModel) => {
 
   <!-- モーダル表示 -->
   <v-dialog v-model="dialog" max-width="800px">
-    <v-img :src="selectedImage" alt="404 Error" max-height="600px"></v-img>
+    <v-img :src="selectedImage" alt="404 Error" max-height="600px" lazy></v-img>
   </v-dialog>
 </template>
 

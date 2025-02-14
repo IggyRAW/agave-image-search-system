@@ -40,9 +40,9 @@ async function onSearchByProvider(provider: string) {
 <template>
   <v-app-bar scroll-threshold="228">
     <v-app-bar-title>
-      <img width="250px" height="50px" src="../../assets/title.png" alt="title" />
+      <img width="250px" height="50px" src="../../assets/title.png" alt="title" loading="lazy" />
       <a :href="MYURL" target="_blank" rel="noopener noreferrer">
-        <img width="60px" height="60px" src="../../assets/logo.png" alt="logo" />
+        <img width="60px" height="60px" src="../../assets/logo.png" alt="logo" loading="lazy" />
       </a>
     </v-app-bar-title>
     <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
