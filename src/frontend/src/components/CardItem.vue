@@ -16,32 +16,36 @@ const openDialog = (item: CardItemModel) => {
 
 <template>
   <v-card class="mx-auto width: 100%" max-width="344">
+    <!-- 画像をカードいっぱいに表示 -->
     <v-img
-      height="300%"
       :src="'/api/' + item.image_file_path"
       :alt="item.name"
+      height="300"
       cover
       @click="openDialog(item)"
       lazy
     ></v-img>
+
     <v-card-title class="responsive-title">アガベ {{ item.name }}</v-card-title>
-    <v-card-subtitle
-      >提供者：<a :href="item.image_source" target="_blank" rel="noopener noreferrer">{{
-        item.username
-      }}</a></v-card-subtitle
-    >
+
+    <v-card-subtitle>
+      提供者：<a :href="item.image_source" target="_blank" rel="noopener noreferrer">
+        {{ item.username }}
+      </a>
+    </v-card-subtitle>
+
     <v-card-actions class="d-flex justify-end">
       <v-btn :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show = !show"></v-btn>
     </v-card-actions>
+
     <v-expand-transition>
       <div v-show="show">
         <v-divider></v-divider>
-
         <v-card-text>
           <template v-if="item.username !== item.source">
-            購入元：<a :href="item.sourcename" target="_blank" rel="noopener noreferrer">{{
-              item.source
-            }}</a>
+            購入元：<a :href="item.sourcename" target="_blank" rel="noopener noreferrer">
+              {{ item.source }}
+            </a>
             <br />
           </template>
           原産国：{{ item.origin_country }}
@@ -71,5 +75,9 @@ const openDialog = (item: CardItemModel) => {
   overflow-wrap: break-word;
   font-size: clamp(12px, 2vw, 18px);
   line-height: 1.2;
+}
+
+.v-img {
+  object-fit: cover;
 }
 </style>
