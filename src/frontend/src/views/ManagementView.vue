@@ -131,5 +131,3 @@ const onSave = async () => {
     </v-main>
   </v-app>
 </template>
-
-<style scoped></style>

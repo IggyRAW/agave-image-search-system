@@ -18,6 +18,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 
+// ネームドリストを監視して更新
 watch(
   () => searchStore.namedList,
   (newList) => {
@@ -25,18 +26,21 @@ watch(
   },
 )
 
+// 検索ワードからメニューリストを更新
 const filteredSuggestions = computed(() =>
   searchStore.searchWord
     ? suggestions.value.filter((item) => item.name.includes(searchStore.searchWord))
     : [],
 )
 
+// メニューリスト選択時処理
 const selectSuggestion = (suggestion: string) => {
   searchStore.searchWord = suggestion
   onSearch()
   showMenu.value = false
 }
 
+// メニューリストを閉じる
 const hideMenu = () => {
   setTimeout(() => (showMenu.value = false), 200)
 }
@@ -48,6 +52,7 @@ const handleScroll = () => {
   }
 }
 
+// 検索処理
 const onSearch = () => {
   searchStore.setSearchWord(searchStore.searchWord)
   searchStore.setSearchType(0)

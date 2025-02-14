@@ -18,6 +18,7 @@ onMounted(async () => {
   }
 })
 
+// ネームド検索処理
 async function onSearchByNamed(named: string) {
   searchStore.setSearchWord(named)
   searchStore.setSearchType(1)
@@ -26,6 +27,7 @@ async function onSearchByNamed(named: string) {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
+// 提供者検索処理
 async function onSearchByProvider(provider: string) {
   searchStore.setSearchWord(provider)
   searchStore.setSearchType(2)
@@ -78,6 +80,14 @@ async function onSearchByProvider(provider: string) {
 </template>
 
 <style scoped>
+@font-face {
+  font-family: 'MyCustomFont';
+  src:
+    url('path/to/font.woff2') format('woff2'),
+    url('path/to/font.woff') format('woff');
+  font-display: swap; /* フォント読み込み中にシステムフォントが表示される */
+}
+
 .logo {
   max-width: 100%;
   height: 100%;

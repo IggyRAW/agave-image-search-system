@@ -34,6 +34,14 @@ const loadMore = () => {
 </template>
 
 <style scoped>
+@font-face {
+  font-family: 'MyCustomFont';
+  src:
+    url('path/to/font.woff2') format('woff2'),
+    url('path/to/font.woff') format('woff');
+  font-display: swap; /* フォント読み込み中にシステムフォントが表示される */
+}
+
 .pagination-container {
   display: flex;
   justify-content: center;
