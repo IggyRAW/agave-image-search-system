@@ -20,7 +20,7 @@ const openDialog = (item: CardItemModel) => {
     <v-img
       :src="'/api/' + item.image_file_path"
       :alt="item.name"
-      height="300"
+      class="responsive-img"
       cover
       @click="openDialog(item)"
       lazy
@@ -79,5 +79,9 @@ const openDialog = (item: CardItemModel) => {
 
 .v-img {
   object-fit: cover;
+}
+
+.responsive-img {
+  height: clamp(200px, 30vw, 300px);
 }
 </style>
