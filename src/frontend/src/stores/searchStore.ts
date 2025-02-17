@@ -2,6 +2,7 @@ import { getSearchList, type CardItemModel } from '@/api/search'
 import { getSearchListByNamed, type NamedModel } from '@/api/getNamedList'
 import { defineStore } from 'pinia'
 import { getSearchListByProvider } from '@/api/getProviders'
+import { initItem } from '@/api/types/initItem'
 
 export const useSearchStore = defineStore('search', {
   state: () => ({
@@ -10,7 +11,7 @@ export const useSearchStore = defineStore('search', {
     currentPage: 1,
     totalPage: 0,
     limit: 18,
-    searchList: [] as CardItemModel[],
+    searchList: initItem as CardItemModel[],
     namedList: [] as NamedModel[],
   }),
 
