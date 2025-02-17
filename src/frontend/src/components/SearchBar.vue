@@ -27,11 +27,20 @@ watch(
 )
 
 // 検索ワードからメニューリストを更新
-const filteredSuggestions = computed(() =>
-  searchStore.searchWord
-    ? suggestions.value.filter((item) => item.name.includes(searchStore.searchWord))
-    : [],
-)
+const filteredSuggestions = computed(() => {
+  // カタカナに変換
+  const convertToKatakana = (str: string) =>
+    str.replace(/[\u3041-\u3096]/g, (match: string) =>
+      String.fromCharCode(match.charCodeAt(0) + 0x60),
+    )
+
+  return searchStore.searchWord
+    ? suggestions.value.filter((item) => {
+        const searchWordKatakana = convertToKatakana(searchStore.searchWord)
+        return item.name.includes(searchWordKatakana)
+      })
+    : []
+})
 
 // メニューリスト選択時処理
 const selectSuggestion = (suggestion: string) => {
