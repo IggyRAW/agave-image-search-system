@@ -11,6 +11,7 @@ const providers = ref<ProviderModel[]>([])
 
 onMounted(async () => {
   try {
+    searchStore.fetchRankingList()
     searchStore.namedList = await getNamedList()
     providers.value = await getProviders()
   } catch (error) {
@@ -61,6 +62,7 @@ async function onSearchByProvider(provider: string) {
           @click="onSearchByNamed(named.name)"
         ></v-list-item>
       </v-list-group>
+
       <v-list-group>
         <template v-slot:activator="{ props }">
           <v-list-item v-bind="props" title="提供者一覧"> </v-list-item>
@@ -72,6 +74,19 @@ async function onSearchByProvider(provider: string) {
           @click="onSearchByProvider(provider.username)"
         ></v-list-item>
       </v-list-group>
+
+      <v-list-group>
+        <template v-slot:activator="{ props }">
+          <v-list-item v-bind="props" title="検索ランキング"> </v-list-item>
+        </template>
+        <v-list-item
+          v-for="(ranking, index) in searchStore.rankingList"
+          :key="ranking"
+          :title="`${index + 1}位 ${ranking}`"
+          @click="onSearchByNamed(ranking)"
+        ></v-list-item>
+      </v-list-group>
+
       <a :href="MYURL" target="_blank" rel="noopener noreferrer">
         <v-list-item title="お問い合わせ" value="contact"></v-list-item>
       </a>

@@ -3,6 +3,7 @@ import { getSearchListByNamed, type NamedModel } from '@/api/getNamedList'
 import { defineStore } from 'pinia'
 import { getSearchListByProvider } from '@/api/getProviders'
 import { initItem } from '@/api/types/initItem'
+import { initialized } from '@/api/init'
 
 export const useSearchStore = defineStore('search', {
   state: () => ({
@@ -13,6 +14,7 @@ export const useSearchStore = defineStore('search', {
     limit: 18,
     searchList: initItem as CardItemModel[],
     namedList: [] as NamedModel[],
+    rankingList: [],
   }),
 
   actions: {
@@ -27,6 +29,15 @@ export const useSearchStore = defineStore('search', {
 
     setTotalPage(totalPage: number) {
       this.totalPage = totalPage
+    },
+
+    async fetchRankingList() {
+      try {
+        const res = await initialized()
+        this.rankingList = res
+      } catch (err) {
+        console.error('ランキングリストの取得に失敗しました', err)
+      }
     },
 
     async fetchSearchList() {
@@ -45,6 +56,7 @@ export const useSearchStore = defineStore('search', {
         // トータルページ数の計算
         this.totalPage = Math.ceil(data.total / this.limit)
 
+        // 検索結果リストの反映
         this.searchList = data.search_list
       } catch (error) {
         console.error('検索エラー：', error)
