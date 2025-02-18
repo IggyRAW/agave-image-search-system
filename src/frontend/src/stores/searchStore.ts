@@ -14,7 +14,7 @@ export const useSearchStore = defineStore('search', {
     limit: 18,
     searchList: initItem as CardItemModel[],
     namedList: [] as NamedModel[],
-    rankingList: [],
+    rankingList: [] as string[],
   }),
 
   actions: {
@@ -33,8 +33,7 @@ export const useSearchStore = defineStore('search', {
 
     async fetchRankingList() {
       try {
-        const res = await initialized()
-        this.rankingList = res
+        this.rankingList = await initialized()
       } catch (err) {
         console.error('ランキングリストの取得に失敗しました', err)
       }
