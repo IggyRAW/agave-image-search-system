@@ -13,3 +13,4 @@ class CardItemModel(BaseModel):
     sourcename: str
     image_source: Optional[str]
     origin_country: Optional[str]
+    search_count: int

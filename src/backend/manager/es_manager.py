@@ -34,6 +34,9 @@ class ElasticsearchManager:
     def insert(self, doc: dict):
         return self.es.index(index=INDEX_NAME, document=doc)
 
+    def update(self, id: str, doc):
+        return self.es.update(index=INDEX_NAME, id=id, body=doc)
+
     def refresh(self):
         return self.es.indices.refresh(index=INDEX_NAME)
 

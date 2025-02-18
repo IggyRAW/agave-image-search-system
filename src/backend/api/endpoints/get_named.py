@@ -58,21 +58,39 @@ def search_named(
         total = response["hits"]["total"]["value"]
         response = response["hits"]["hits"]
 
-        search_list = [
-            CardItemModel(
-                id=res["_id"],
-                name=res["_source"]["name"],
-                username=res["_source"]["username"],
-                username_source=res["_source"]["username_source"],
-                image_file_path=res["_source"]["image_file_path"],
-                source=res["_source"]["source"],
-                sourcename=res["_source"]["sourcename"],
-                image_source=res["_source"]["image_source"],
-                origin_country=res["_source"]["origin_country"],
+        search_list = []
+        for res in response:
+            search_list.append(
+                CardItemModel(
+                    id=res["_id"],
+                    name=res["_source"]["name"],
+                    username=res["_source"]["username"],
+                    username_source=res["_source"]["username_source"],
+                    image_file_path=res["_source"]["image_file_path"],
+                    source=res["_source"]["source"],
+                    sourcename=res["_source"]["sourcename"],
+                    image_source=res["_source"]["image_source"],
+                    origin_country=res["_source"]["origin_country"],
+                    search_count=res["_source"]["search_count"],
+                )
             )
-            for res in response
-        ]
-        return {"total": total, "search_list": search_list}
+
+            doc_id = None
+            if res["_source"]["name"] == search_word:
+                doc_id = res["_id"]
+            if doc_id:
+                update_script = {
+                    "script": {
+                        "source": "ctx._source.search_count += 1",
+                        "lang": "painless",
+                    }
+                }
+                es.update(doc_id, update_script)
+
+        return {
+            "total": total,
+            "search_list": search_list,
+        }
 
     except Exception:
         import traceback

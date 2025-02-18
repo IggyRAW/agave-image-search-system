@@ -20,7 +20,8 @@
         "sourcename": { "type": "text" },
         "image_source": { "type": "text" },
         "origin_country": { "type": "text" },
-        "is_display": { "type": "boolean" }
+        "is_display": { "type": "boolean" },
+        "search_count": { "type": "integer" }
       }
     }
   },

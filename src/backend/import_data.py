@@ -23,6 +23,7 @@ class CardItemModel:
         image_source: str,
         origin_country: Optional[str] = None,
         is_display: bool = True,
+        search_count: int = 0,
     ):
         self.name = name
         self.username = username
@@ -33,6 +34,7 @@ class CardItemModel:
         self.image_source = image_source
         self.origin_country = origin_country
         self.is_display = is_display
+        self.search_count = search_count
 
 
 def import_data():
@@ -64,6 +66,7 @@ def import_data():
                 image_source=image_source,
                 origin_country=origin_country,
                 is_display=row.is_display,
+                search_count=row.search_count,
             ).__dict__
 
             builder = ESQueryBuilder()
