@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+from logging import getLogger
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Form, UploadFile
@@ -9,6 +10,8 @@ from fastapi.responses import JSONResponse
 from api.schemas.agave_obj import AgaveObjModel
 from manager.es_manager import ElasticsearchManager, get_elasticsearch_manager
 from query_builder.es_query_builder import ESQueryBuilder
+
+logger = getLogger(__name__)
 
 router = APIRouter()
 
@@ -60,7 +63,6 @@ async def post_agave_obj(
     username: str = Form(...),
     username_source: str = Form(...),
     image_file: UploadFile = File(...),
-    image_file_path: str = Form(...),
     source: str = Form(...),
     sourcename: str = Form(...),
     image_source: str = Form(...),
@@ -83,7 +85,7 @@ async def post_agave_obj(
             name=name,
             username=username,
             username_source=username_source,
-            image_file_path=f"{UPLOAD_DIR}/{image_file_path.rsplit('.', 1)[0]}.avif",
+            image_file_path=f"{UPLOAD_DIR}/{image_file.filename.rsplit('.', 1)[0]}.avif",
             source=source,
             sourcename=sourcename,
             image_source=image_source,
@@ -100,14 +102,14 @@ async def post_agave_obj(
         response = es.search(builder.build())
         if _check_doc(response["hits"]["hits"], doc):
             es.insert(doc)
-            print(f"{name}を格納しました。")
+            logger.info(f"{name}を格納しました。")
 
         return True
 
     except Exception:
         import traceback
 
-        print(traceback.format_exc())
+        logger.error(traceback.format_exc())
 
         JSONResponse(
             status_code=500, content={"message": str(traceback.format_exc())}

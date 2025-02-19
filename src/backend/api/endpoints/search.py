@@ -1,9 +1,13 @@
+from logging import getLogger
+
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from api.schemas.search import CardItemModel
 from manager.es_manager import ElasticsearchManager, get_elasticsearch_manager
 from query_builder.es_query_builder import ESQueryBuilder
+
+logger = getLogger(__name__)
 
 router = APIRouter()
 
@@ -19,6 +23,9 @@ async def search(
     検索API
     """
     try:
+        logger.info(
+            f"検索ワード：{search_word} ページ：{page} リミット：{limit}"
+        )
         offset = (page - 1) * limit
         query_builder = ESQueryBuilder()
         if search_word:
@@ -73,7 +80,7 @@ async def search(
     except Exception:
         import traceback
 
-        print(traceback.format_exc())
+        logger.error(traceback.format_exc())
 
         JSONResponse(
             status_code=500, content={"message": str(traceback.format_exc())}
@@ -91,6 +98,7 @@ def search_providers(
     検索API
     """
     try:
+        logger.info(f"提供者名：{provider} ページ：{page} リミット：{limit}")
         offset = (page - 1) * limit
         query_builder = ESQueryBuilder()
 
@@ -130,7 +138,7 @@ def search_providers(
     except Exception:
         import traceback
 
-        print(traceback.format_exc())
+        logger.error(traceback.format_exc())
 
         JSONResponse(
             status_code=500, content={"message": str(traceback.format_exc())}

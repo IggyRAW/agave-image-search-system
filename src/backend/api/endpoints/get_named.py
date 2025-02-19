@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
@@ -5,6 +7,8 @@ from api.schemas.named import Named
 from api.schemas.search import CardItemModel
 from manager.es_manager import ElasticsearchManager, get_elasticsearch_manager
 from query_builder.es_query_builder import ESQueryBuilder
+
+logger = getLogger(__name__)
 
 router = APIRouter()
 
@@ -28,7 +32,7 @@ def get_named_list(
     except Exception:
         import traceback
 
-        print(traceback.format_exc())
+        logger.error(traceback.format_exc())
 
         JSONResponse(
             status_code=500, content={"message": str(traceback.format_exc())}
@@ -43,6 +47,9 @@ def search_named(
     es: ElasticsearchManager = Depends(get_elasticsearch_manager),
 ):
     try:
+        logger.info(
+            f"ネームド名：{search_word} ページ：{page} リミット：{limit}"
+        )
         offset = (page - 1) * limit
         query_builder = ESQueryBuilder()
         if search_word:
@@ -95,7 +102,7 @@ def search_named(
     except Exception:
         import traceback
 
-        print(traceback.format_exc())
+        logger.error(traceback.format_exc())
 
         JSONResponse(
             status_code=500, content={"message": str(traceback.format_exc())}

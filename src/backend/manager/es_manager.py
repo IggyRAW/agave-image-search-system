@@ -1,6 +1,10 @@
+from logging import getLogger
+
 from elasticsearch import Elasticsearch
 
 from manager.config_manager import ConfigManager
+
+logger = getLogger(__name__)
 
 config = ConfigManager()
 
@@ -23,7 +27,7 @@ class ElasticsearchManager:
         """
         if not self.es.indices.exists(index=INDEX_NAME):
             self.es.indices.create(index=INDEX_NAME, body=config.MAPPING)
-            print("インデックスを作成しました")
+            logger.info("インデックスを作成しました")
 
     def search(self, query):
         """

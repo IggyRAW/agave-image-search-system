@@ -1,8 +1,12 @@
+from logging import getLogger
+
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from manager.es_manager import ElasticsearchManager, get_elasticsearch_manager
 from query_builder.es_query_builder import ESQueryBuilder
+
+logger = getLogger(__name__)
 
 router = APIRouter()
 
@@ -29,7 +33,7 @@ def init(es: ElasticsearchManager = Depends(get_elasticsearch_manager)):
     except Exception:
         import traceback
 
-        print(traceback.format_exc())
+        logger.error(traceback.format_exc())
 
         JSONResponse(
             status_code=500, content={"message": str(traceback.format_exc())}
