@@ -5,12 +5,16 @@ from fastapi.responses import JSONResponse
 
 from api.schemas.named import Named
 from api.schemas.search import CardItemModel
+from lib.utils import update_search_count
+from manager.config_manager import ConfigManager
 from manager.es_manager import ElasticsearchManager, get_elasticsearch_manager
 from query_builder.es_query_builder import ESQueryBuilder
 
 logger = getLogger(__name__)
 
 router = APIRouter()
+
+config = ConfigManager()
 
 
 @router.get("/get/named/list")
@@ -21,7 +25,7 @@ def get_named_list(
         named_list = []
         query_builder = ESQueryBuilder()
         query_builder.match_all()
-        response = es.search(query_builder.build())
+        response = es.search(config.AGAVE_INDEX, query_builder.build())
         response = response["hits"]["hits"]
         for res in response:
             if not Named(name=res["_source"]["name"]) in named_list:
@@ -61,7 +65,7 @@ def search_named(
         query["from"] = offset
         query["size"] = limit
 
-        response = es.search(query)
+        response = es.search(config.AGAVE_INDEX, query)
         total = response["hits"]["total"]["value"]
         response = response["hits"]["hits"]
 
@@ -78,21 +82,11 @@ def search_named(
                     sourcename=res["_source"]["sourcename"],
                     image_source=res["_source"]["image_source"],
                     origin_country=res["_source"]["origin_country"],
-                    search_count=res["_source"]["search_count"],
                 )
             )
 
-            doc_id = None
-            if res["_source"]["name"] == search_word:
-                doc_id = res["_id"]
-            if doc_id:
-                update_script = {
-                    "script": {
-                        "source": "ctx._source.search_count += 1",
-                        "lang": "painless",
-                    }
-                }
-                es.update(doc_id, update_script)
+        if page == 1:
+            update_search_count(search_word, es)
 
         return {
             "total": total,

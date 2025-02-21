@@ -3,12 +3,15 @@ from logging import getLogger
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
+from manager.config_manager import ConfigManager
 from manager.es_manager import ElasticsearchManager, get_elasticsearch_manager
 from query_builder.es_query_builder import ESQueryBuilder
 
 logger = getLogger(__name__)
 
 router = APIRouter()
+
+config = ConfigManager()
 
 
 @router.get("/init")
@@ -17,7 +20,7 @@ def init(es: ElasticsearchManager = Depends(get_elasticsearch_manager)):
         query_builder = ESQueryBuilder()
         query_builder.match_all()
         query_builder.set_sort("search_count", "desc")
-        response = es.search(query_builder.build())
+        response = es.search(config.SEARCH_COUNT_INDEX, query_builder.build())
 
         ranking_list = []
         for res in response["hits"]["hits"]:

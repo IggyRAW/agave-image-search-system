@@ -1,15 +1,20 @@
 from logging import getLogger
 
+from elasticsearch.helpers import bulk
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from api.schemas.search import CardItemModel
+from lib.utils import update_search_count
+from manager.config_manager import ConfigManager
 from manager.es_manager import ElasticsearchManager, get_elasticsearch_manager
 from query_builder.es_query_builder import ESQueryBuilder
 
 logger = getLogger(__name__)
 
 router = APIRouter()
+
+config = ConfigManager()
 
 
 @router.get("/search")
@@ -39,7 +44,7 @@ async def search(
         query["from"] = offset
         query["size"] = limit
 
-        response = es.search(query)
+        response = es.search(config.AGAVE_INDEX, query)
         total = response["hits"]["total"]["value"]
         response = response["hits"]["hits"]
 
@@ -56,21 +61,11 @@ async def search(
                     sourcename=res["_source"]["sourcename"],
                     image_source=res["_source"]["image_source"],
                     origin_country=res["_source"]["origin_country"],
-                    search_count=res["_source"]["search_count"],
                 )
             )
 
-            doc_id = None
-            if res["_source"]["name"] == search_word:
-                doc_id = res["_id"]
-            if doc_id:
-                update_script = {
-                    "script": {
-                        "source": "ctx._source.search_count += 1",
-                        "lang": "painless",
-                    }
-                }
-                es.update(doc_id, update_script)
+        if page == 1:
+            update_search_count(search_word, es)
 
         return {
             "total": total,
@@ -111,7 +106,7 @@ def search_providers(
         query["from"] = offset
         query["size"] = limit
 
-        response = es.search(query)
+        response = es.search(config.AGAVE_INDEX, query)
         total = response["hits"]["total"]["value"]
         response = response["hits"]["hits"]
 
@@ -126,7 +121,6 @@ def search_providers(
                 sourcename=res["_source"]["sourcename"],
                 image_source=res["_source"]["image_source"],
                 origin_country=res["_source"]["origin_country"],
-                search_count=res["_source"]["search_count"],
             )
             for res in response
         ]

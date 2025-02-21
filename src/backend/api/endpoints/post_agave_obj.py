@@ -8,12 +8,15 @@ from fastapi import APIRouter, Depends, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 
 from api.schemas.agave_obj import AgaveObjModel
+from manager.config_manager import ConfigManager
 from manager.es_manager import ElasticsearchManager, get_elasticsearch_manager
 from query_builder.es_query_builder import ESQueryBuilder
 
 logger = getLogger(__name__)
 
 router = APIRouter()
+
+config = ConfigManager()
 
 es_manager = ElasticsearchManager()
 
@@ -113,9 +116,9 @@ async def post_agave_obj(
         builder.set_bool()
         builder.set_should()
         builder.create_search_name_query("name", name)
-        response = es.search(builder.build())
+        response = es.search(config.AGAVE_INDEX, builder.build())
         if _check_doc(response["hits"]["hits"], doc):
-            es.insert(doc)
+            es.insert(config.AGAVE_INDEX, doc)
             logger.info(f"{name}を格納しました。")
 
         return True
@@ -142,7 +145,7 @@ def _get_named_list():
         named_list = []
         query_builder = ESQueryBuilder()
         query_builder.match_all()
-        response = es_manager.search(query_builder.build())
+        response = es_manager.search(config.AGAVE_INDEX, query_builder.build())
         response = response["hits"]["hits"]
         for res in response:
             if not res["_source"]["name"] in named_list:
@@ -177,7 +180,7 @@ def _get_search_count(
         query["from"] = offset
         query["size"] = limit
 
-        response = es_manager.search(query)
+        response = es_manager.search(config.AGAVE_INDEX, query)
         response = response["hits"]["hits"]
 
         return response[0]["_source"]["search_count"]
