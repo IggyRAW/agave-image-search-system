@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { CardItemModel } from '../api/search'
-
+import { useSearchStore } from '@/stores/searchStore'
 defineProps<{ item: CardItemModel }>()
 
+const searchStore = useSearchStore()
+const isActive = ref(false)
 const show = ref(false)
 const dialog = ref(false)
 const selectedImage = ref('')
@@ -11,6 +13,15 @@ const selectedImage = ref('')
 const openDialog = (item: CardItemModel) => {
   selectedImage.value = '/api/' + item.image_file_path
   dialog.value = true
+}
+
+// 検索処理
+const onSearch = (searchWord: string) => {
+  searchStore.setSearchWord(searchWord)
+  searchStore.setSearchType(1)
+  searchStore.fetchSearchList()
+
+  searchStore.scrollToTop()
 }
 </script>
 
@@ -26,7 +37,14 @@ const openDialog = (item: CardItemModel) => {
       lazy
     ></v-img>
 
-    <v-card-title class="responsive-title">アガベ {{ item.name }}</v-card-title>
+    <v-card-title
+      class="responsive-title"
+      @click="onSearch(item.name)"
+      :class="{ active: isActive }"
+      @touchstart="isActive = true"
+      @touchend="isActive = false"
+      >アガベ {{ item.name }}</v-card-title
+    >
 
     <v-card-subtitle>
       提供者：<a :href="item.image_source" target="_blank" rel="noopener noreferrer">
@@ -75,6 +93,12 @@ const openDialog = (item: CardItemModel) => {
   overflow-wrap: break-word;
   font-size: clamp(12px, 2vw, 18px);
   line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.responsive-title.active {
+  background-color: rgba(0, 17, 1, 0.301);
 }
 
 .v-img {
