@@ -15,6 +15,8 @@ logger = getLogger(__name__)
 
 router = APIRouter()
 
+es_manager = ElasticsearchManager()
+
 UPLOAD_DIR = "./images"
 
 
@@ -77,9 +79,20 @@ async def post_agave_obj(
         if not await save_and_convert_image(image_file):
             return False
 
+        # インスタURL用テキスト抽出
         match = re.search(r"instagram.com/p/([^/?]+)", image_source)
         if match:
             image_source = match.group(1)
+
+        # named_list取得
+        named_list = _get_named_list()
+        # search_countの設定
+        search_count = 0
+        for named in named_list:
+            if named == name:
+                # ネームドのドキュメント取得しserch_countを取得
+                search_count = _get_search_count(name)
+                break
 
         doc = AgaveObjModel(
             name=name,
@@ -93,6 +106,7 @@ async def post_agave_obj(
                 origin_country if origin_country is not None else "不明"
             ),
             is_display=is_display,
+            search_count=search_count,
         ).__dict__
 
         builder = ESQueryBuilder()
@@ -121,3 +135,58 @@ def _check_doc(response, doc: dict) -> bool:
         if doc == res["_source"]:
             return False
     return True
+
+
+def _get_named_list():
+    try:
+        named_list = []
+        query_builder = ESQueryBuilder()
+        query_builder.match_all()
+        response = es_manager.search(query_builder.build())
+        response = response["hits"]["hits"]
+        for res in response:
+            if not res["_source"]["name"] in named_list:
+                named_list.append(res["_source"]["name"])
+
+        return named_list
+
+    except Exception:
+        import traceback
+
+        logger.error(traceback.format_exc())
+
+        JSONResponse(
+            status_code=500, content={"message": str(traceback.format_exc())}
+        )
+
+
+def _get_search_count(
+    search_word: str,
+    page: int = 1,
+    limit: int = 18,
+):
+    try:
+        offset = (page - 1) * limit
+        query_builder = ESQueryBuilder()
+        if search_word:
+            query_builder.set_name_term(search_word)
+        else:
+            query_builder.match_all()
+
+        query = query_builder.build()
+        query["from"] = offset
+        query["size"] = limit
+
+        response = es_manager.search(query)
+        response = response["hits"]["hits"]
+
+        return response[0]["_source"]["search_count"]
+
+    except Exception:
+        import traceback
+
+        logger.error(traceback.format_exc())
+
+        JSONResponse(
+            status_code=500, content={"message": str(traceback.format_exc())}
+        )
