@@ -1,46 +1,27 @@
 import math
 import os
-from typing import Optional
 
 import pandas as pd
+from elasticsearch.helpers import bulk
+from tqdm import tqdm
 
 from manager.config_manager import ConfigManager
 from manager.es_manager import ElasticsearchManager
 from query_builder.es_query_builder import ESQueryBuilder
 
-es = ElasticsearchManager()
+es = ElasticsearchManager(1)
 
-
-class CardItemModel:
-    def __init__(
-        self,
-        name: str,
-        username: str,
-        username_source: str,
-        image_file_path: str,
-        source: str,
-        sourcename: str,
-        image_source: str,
-        origin_country: Optional[str] = None,
-        is_display: bool = True,
-        search_count: int = 0,
-    ):
-        self.name = name
-        self.username = username
-        self.username_source = username_source
-        self.image_file_path = image_file_path
-        self.source = source
-        self.sourcename = sourcename
-        self.image_source = image_source
-        self.origin_country = origin_country
-        self.is_display = is_display
-        self.search_count = search_count
+config = ConfigManager()
 
 
 def import_data():
     try:
-        df = _load_excel(_get_excel_file(ConfigManager().EXCEL))
-        for row in df.itertuples():
+        df = _load_excel(_get_excel_file(config.EXCEL))
+        named_list = []
+        bulk_data = []
+        for row in tqdm(df.itertuples()):
+            if row.name not in named_list:
+                named_list.append(row.name)
             # 原産国がNaNの場合Noneに変換
             origin_country = (
                 None
@@ -56,27 +37,56 @@ def import_data():
                 and math.isnan(row.image_source)
                 else row.image_source
             )
-            doc = CardItemModel(
-                name=row.name,
-                username=row.username,
-                username_source=row.username_source,
-                image_file_path=row.image_file_path,
-                source=row.source,
-                sourcename=row.sourcename,
-                image_source=image_source,
-                origin_country=origin_country,
-                is_display=row.is_display,
-                search_count=row.search_count,
-            ).__dict__
+            doc = {
+                "_index": config.AGAVE_INDEX,
+                "_source": {
+                    "name": row.name,
+                    "username": row.username,
+                    "username_source": row.username_source,
+                    "image_file_path": row.image_file_path,
+                    "source": row.source,
+                    "sourcename": row.sourcename,
+                    "image_source": image_source,
+                    "origin_country": origin_country,
+                    "is_display": row.is_display,
+                },
+            }
 
             builder = ESQueryBuilder()
             builder.set_bool()
             builder.set_should()
             builder.create_search_name_query("name", row.name)
-            response = es.search(builder.build())
-            if _check_doc(response["hits"]["hits"], doc):
-                es.insert(doc)
-                print(f"{row.name}を格納しました。")
+            response = es.search(config.AGAVE_INDEX, builder.build())
+            if _check_doc(response["hits"]["hits"], doc["_source"]):
+                bulk_data.append(doc)
+
+        if bulk_data:
+            success, failed = bulk(es.es, bulk_data)
+            print(f"{success}件のデータを{config.AGAVE_INDEX}に格納しました。")
+            bulk_data = []
+
+        # search_count_indexの作成
+        query_builder_for_search_count = ESQueryBuilder()
+        query_builder_for_search_count.match_all()
+        response = es.search(
+            config.SEARCH_COUNT_INDEX, query_builder_for_search_count.build()
+        )
+        response = response["hits"]["hits"]
+        for named in tqdm(named_list):
+            if any(named == res["_source"]["name"] for res in response):
+                continue
+            doc = {
+                "_index": config.SEARCH_COUNT_INDEX,
+                "_source": {"name": named, "search_count": 0},
+            }
+            bulk_data.append(doc)
+
+        if bulk_data:
+            success, failed = bulk(es.es, bulk_data)
+            print(
+                f"{success}件のデータを{config.SEARCH_COUNT_INDEX}に格納しました。"
+            )
+            bulk_data = []
 
     except Exception:
         raise
