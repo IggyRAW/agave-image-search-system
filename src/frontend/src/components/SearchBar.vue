@@ -36,8 +36,9 @@ const filteredSuggestions = computed(() => {
 
   return searchStore.searchWord
     ? suggestions.value.filter((item) => {
-        const searchWordKatakana = convertToKatakana(searchStore.searchWord)
-        return item.name.includes(searchWordKatakana)
+        const searchWordKatakana = convertToKatakana(searchStore.searchWord).toUpperCase()
+        const itemNameTransformed = convertToKatakana(item.name).toUpperCase()
+        return itemNameTransformed.includes(searchWordKatakana)
       })
     : []
 })
