@@ -17,6 +17,19 @@ const handleScroll = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+
+  // admaxoverlay 設定
+  window.admaxoverlay = {
+    tag_id: '796a61b6b40635a5f691c10d76fad8f0',
+    type: 'o',
+  }
+
+  // 広告スクリプトを動的に追加
+  const script = document.createElement('script')
+  script.src = 'https://adm.shinobi.jp/st/s.js'
+  script.type = 'text/javascript'
+  script.charset = 'utf-8'
+  document.head.appendChild(script)
 })
 </script>
 
@@ -57,6 +70,10 @@ onMounted(() => {
 
       <!-- ページネーション -->
       <Pagination />
+
+      <!-- admax -->
+      <div class="ad-container"></div>
+      <!-- admax -->
 
       <!-- トップへ移動ボタン -->
       <v-btn v-if="showScrollButton" class="scroll-to-top" @click="searchStore.scrollToTop()" icon>
@@ -101,5 +118,10 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   padding: 16px;
+}
+
+#ad-container {
+  width: 100%;
+  text-align: center;
 }
 </style>
