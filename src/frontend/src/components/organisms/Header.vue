@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { getNamedList } from '@/api/getNamedList'
 import { getProviders, type ProviderModel } from '@/api/getProviders'
-import { MYURL } from '@/environment'
+import { MYURL, BEATGARDENURL } from '@/environment'
 import { useSearchStore } from '@/stores/searchStore'
 
 const searchStore = useSearchStore()
@@ -90,6 +90,15 @@ async function onSearchByProvider(provider: string) {
       <a :href="MYURL" target="_blank" rel="noopener noreferrer">
         <v-list-item title="お問い合わせ" value="contact"></v-list-item>
       </a>
+      <div class="flex-grow-1"></div>
+      <a
+        :href="BEATGARDENURL"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="text-decoration: none"
+      >
+        <v-list-item title="BEAT GARDENブログ" value="contact" class="banner-item"></v-list-item>
+      </a>
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -106,5 +115,17 @@ async function onSearchByProvider(provider: string) {
 .logo {
   max-width: 100%;
   height: 100%;
+}
+.banner-item {
+  background-image: url('../../assets/beat-garden.png');
+  background-size: cover;
+  background-position: center;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  color: rgb(255, 255, 255);
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
 }
 </style>
