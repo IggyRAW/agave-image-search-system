@@ -1,11 +1,20 @@
+from logging import getLogger
+
+from elasticsearch.helpers import bulk
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from api.schemas.search import CardItemModel
+from lib.utils import update_search_count
+from manager.config_manager import ConfigManager
 from manager.es_manager import ElasticsearchManager, get_elasticsearch_manager
 from query_builder.es_query_builder import ESQueryBuilder
 
+logger = getLogger(__name__)
+
 router = APIRouter()
+
+config = ConfigManager()
 
 
 @router.get("/search")
@@ -19,6 +28,9 @@ async def search(
     検索API
     """
     try:
+        logger.info(
+            f"検索ワード：{search_word} ページ：{page} リミット：{limit}"
+        )
         offset = (page - 1) * limit
         query_builder = ESQueryBuilder()
         if search_word:
@@ -32,31 +44,38 @@ async def search(
         query["from"] = offset
         query["size"] = limit
 
-        response = es.search(query)
+        response = es.search(config.AGAVE_INDEX, query)
         total = response["hits"]["total"]["value"]
         response = response["hits"]["hits"]
 
-        search_list = [
-            CardItemModel(
-                id=res["_id"],
-                name=res["_source"]["name"],
-                username=res["_source"]["username"],
-                username_source=res["_source"]["username_source"],
-                image_file_path=res["_source"]["image_file_path"],
-                source=res["_source"]["source"],
-                sourcename=res["_source"]["sourcename"],
-                image_source=res["_source"]["image_source"],
-                origin_country=res["_source"]["origin_country"],
+        search_list = []
+        for res in response:
+            search_list.append(
+                CardItemModel(
+                    id=res["_id"],
+                    name=res["_source"]["name"],
+                    username=res["_source"]["username"],
+                    username_source=res["_source"]["username_source"],
+                    image_file_path=res["_source"]["image_file_path"],
+                    source=res["_source"]["source"],
+                    sourcename=res["_source"]["sourcename"],
+                    image_source=res["_source"]["image_source"],
+                    origin_country=res["_source"]["origin_country"],
+                )
             )
-            for res in response
-        ]
 
-        return {"total": total, "search_list": search_list}
+        if page == 1:
+            update_search_count(search_word, es)
+
+        return {
+            "total": total,
+            "search_list": search_list,
+        }
 
     except Exception:
         import traceback
 
-        print(traceback.format_exc())
+        logger.error(traceback.format_exc())
 
         JSONResponse(
             status_code=500, content={"message": str(traceback.format_exc())}
@@ -74,6 +93,7 @@ def search_providers(
     検索API
     """
     try:
+        logger.info(f"提供者名：{provider} ページ：{page} リミット：{limit}")
         offset = (page - 1) * limit
         query_builder = ESQueryBuilder()
 
@@ -86,7 +106,7 @@ def search_providers(
         query["from"] = offset
         query["size"] = limit
 
-        response = es.search(query)
+        response = es.search(config.AGAVE_INDEX, query)
         total = response["hits"]["total"]["value"]
         response = response["hits"]["hits"]
 
@@ -104,12 +124,15 @@ def search_providers(
             )
             for res in response
         ]
-        return {"total": total, "search_list": search_list}
+        return {
+            "total": total,
+            "search_list": search_list,
+        }
 
     except Exception:
         import traceback
 
-        print(traceback.format_exc())
+        logger.error(traceback.format_exc())
 
         JSONResponse(
             status_code=500, content={"message": str(traceback.format_exc())}

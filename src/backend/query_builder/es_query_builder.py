@@ -31,5 +31,8 @@ class ESQueryBuilder:
     def set_username_term(self, username: str):
         self.query["query"]["term"] = {"username.keyword": username}
 
+    def set_sort(self, field: str, order: str):
+        self.query["sort"] = [{field: {"order": order}}]
+
     def build(self):
         return self.query

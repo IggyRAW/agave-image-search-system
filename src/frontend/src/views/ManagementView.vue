@@ -53,9 +53,9 @@ const onSave = async () => {
 
   const isSuccess = await postAgaveObj(uploadAgaveObj)
   if (isSuccess) {
-    console.log('データを格納しました。')
+    alert('データを格納しました。')
   } else {
-    console.error('データの格納に失敗しました。')
+    alert('データの格納に失敗しました。')
   }
 }
 </script>
@@ -131,5 +131,3 @@ const onSave = async () => {
     </v-main>
   </v-app>
 </template>
-
-<style scoped></style>

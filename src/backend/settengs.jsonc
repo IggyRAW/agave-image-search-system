@@ -3,7 +3,8 @@
     "host": "es01",
     "port": 9200
   },
-  "mapping": {
+  "agave_index": "agave_index",
+  "agave_index_mapping": {
     "mappings": {
       "properties": {
         "name": {
@@ -21,6 +22,18 @@
         "image_source": { "type": "text" },
         "origin_country": { "type": "text" },
         "is_display": { "type": "boolean" }
+      }
+    }
+  },
+  "search_count_index": "search_count_index",
+  "search_count_index_mapping": {
+    "mappings": {
+      "properties": {
+        "name": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
+        "search_count": { "type": "integer" }
       }
     }
   },

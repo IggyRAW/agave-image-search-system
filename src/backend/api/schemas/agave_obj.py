@@ -13,3 +13,4 @@ class AgaveObjModel(BaseModel):
     image_source: Optional[str]
     origin_country: Optional[str] = None
     is_display: bool
+    search_count: Optional[int] = 0

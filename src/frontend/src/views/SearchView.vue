@@ -17,6 +17,19 @@ const handleScroll = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+
+  // admaxoverlay 設定
+  window.admaxoverlay = {
+    tag_id: '796a61b6b40635a5f691c10d76fad8f0',
+    type: 'o',
+  }
+
+  // 広告スクリプトを動的に追加
+  const script = document.createElement('script')
+  script.src = 'https://adm.shinobi.jp/st/s.js'
+  script.type = 'text/javascript'
+  script.charset = 'utf-8'
+  document.head.appendChild(script)
 })
 </script>
 
@@ -32,6 +45,9 @@ onMounted(() => {
         v-if="searchStore.searchList.length > 0"
         style="max-width: 95%; margin: 0 auto; padding: 16px"
       >
+        <div v-if="searchStore.searchType == 0">
+          <p>※部分一致検索なので他ネームドも含みます</p>
+        </div>
         <v-row>
           <v-col
             v-for="item in searchStore.searchList"
@@ -55,6 +71,10 @@ onMounted(() => {
       <!-- ページネーション -->
       <Pagination />
 
+      <!-- admax -->
+      <div class="ad-container"></div>
+      <!-- admax -->
+
       <!-- トップへ移動ボタン -->
       <v-btn v-if="showScrollButton" class="scroll-to-top" @click="searchStore.scrollToTop()" icon>
         <v-icon>mdi-arrow-up</v-icon>
@@ -64,6 +84,14 @@ onMounted(() => {
 </template>
 
 <style scoped>
+@font-face {
+  font-family: 'MyCustomFont';
+  src:
+    url('path/to/font.woff2') format('woff2'),
+    url('path/to/font.woff') format('woff');
+  font-display: swap; /* フォント読み込み中にシステムフォントが表示される */
+}
+
 .scroll-to-top {
   position: fixed;
   bottom: 70px;
@@ -90,5 +118,10 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   padding: 16px;
+}
+
+#ad-container {
+  width: 100%;
+  text-align: center;
 }
 </style>
