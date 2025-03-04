@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 import { getSearchListByProvider } from '@/api/getProviders'
 import { initItem } from '@/api/types/initItem'
 import { initialized } from '@/api/init'
+import { getFeature } from '@/api/getFeature'
 
 export const useSearchStore = defineStore('search', {
   state: () => ({
@@ -15,6 +16,7 @@ export const useSearchStore = defineStore('search', {
     searchList: initItem as CardItemModel[],
     namedList: [] as NamedModel[],
     rankingList: [] as string[],
+    feature: '',
   }),
 
   actions: {
@@ -68,6 +70,14 @@ export const useSearchStore = defineStore('search', {
 
     scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' })
+    },
+
+    async fetchFeature(searchWord: string) {
+      try {
+        this.feature = await getFeature(searchWord)
+      } catch (err) {
+        console.error('エラー', err)
+      }
     },
   },
 })

@@ -7,6 +7,7 @@ defineProps<{ item: CardItemModel }>()
 const searchStore = useSearchStore()
 const isActive = ref(false)
 const show = ref(false)
+const showFeature = ref(false)
 const dialog = ref(false)
 const selectedImage = ref('')
 
@@ -22,6 +23,11 @@ const onSearch = (searchWord: string) => {
   searchStore.fetchSearchList()
 
   searchStore.scrollToTop()
+}
+
+const onFeature = async (searchWord: string) => {
+  showFeature.value = true
+  await searchStore.fetchFeature(searchWord)
 }
 </script>
 
@@ -53,10 +59,40 @@ const onSearch = (searchWord: string) => {
     </v-card-subtitle>
 
     <v-card-actions class="d-flex justify-end">
+      <v-btn
+        variant="text"
+        color="green-darken-4"
+        text="特徴"
+        @click="onFeature(item.name)"
+      ></v-btn>
+      <v-spacer></v-spacer>
       <v-btn :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show = !show"></v-btn>
     </v-card-actions>
 
     <v-expand-transition>
+      <v-card
+        v-if="showFeature"
+        class="position-absolute w-100 d-flex flex-column"
+        height="100%"
+        style="bottom: 0"
+      >
+        <v-card-text class="pb-16 flex-grow-1 overflow-y-auto">
+          <p class="text-h6">{{ item.name }}</p>
+          <p>{{ searchStore.feature }}</p>
+        </v-card-text>
+        <v-card-actions
+          class="pt-0 position-absolute w-100"
+          style="bottom: 0; left: 0; background: white"
+        >
+          <v-btn
+            color="grey-darken-1"
+            text="CLOSE"
+            variant="text"
+            @click="showFeature = false"
+          ></v-btn>
+        </v-card-actions>
+      </v-card>
+
       <div v-show="show">
         <v-divider></v-divider>
         <v-card-text>
@@ -66,7 +102,10 @@ const onSearch = (searchWord: string) => {
             </a>
             <br />
           </template>
-          原産国：{{ item.origin_country }}
+          <template v-if="item.origin_country !== '不明'">
+            原産国：{{ item.origin_country }}
+            <br />
+          </template>
         </v-card-text>
       </div>
     </v-expand-transition>
@@ -84,7 +123,7 @@ const onSearch = (searchWord: string) => {
   src:
     url('path/to/font.woff2') format('woff2'),
     url('path/to/font.woff') format('woff');
-  font-display: swap; /* フォント読み込み中にシステムフォントが表示される */
+  font-display: swap;
 }
 
 .responsive-title {

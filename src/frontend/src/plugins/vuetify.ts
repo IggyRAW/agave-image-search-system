@@ -30,6 +30,8 @@ import {
   VFileInput,
   VCheckbox,
   VMenu,
+  VSwitch,
+  VSpacer,
 } from 'vuetify/components'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
@@ -68,6 +70,8 @@ const vuetify = createVuetify({
     VFileInput,
     VCheckbox,
     VMenu,
+    VSwitch,
+    VSpacer,
   },
   icons: {
     defaultSet: 'mdi',
