@@ -26,8 +26,8 @@ const onSearch = (searchWord: string) => {
 }
 
 const onFeature = async (searchWord: string) => {
-  showFeature.value = true
   await searchStore.fetchFeature(searchWord)
+  showFeature.value = true
 }
 </script>
 
@@ -70,29 +70,6 @@ const onFeature = async (searchWord: string) => {
     </v-card-actions>
 
     <v-expand-transition>
-      <v-card
-        v-if="showFeature"
-        class="position-absolute w-100 d-flex flex-column"
-        height="100%"
-        style="bottom: 0"
-      >
-        <v-card-text class="pb-16 flex-grow-1 overflow-y-auto">
-          <p class="text-h6">{{ item.name }}</p>
-          <p>{{ searchStore.feature }}</p>
-        </v-card-text>
-        <v-card-actions
-          class="pt-0 position-absolute w-100"
-          style="bottom: 0; left: 0; background: white"
-        >
-          <v-btn
-            color="grey-darken-1"
-            text="CLOSE"
-            variant="text"
-            @click="showFeature = false"
-          ></v-btn>
-        </v-card-actions>
-      </v-card>
-
       <div v-show="show">
         <v-divider></v-divider>
         <v-card-text>
@@ -114,6 +91,25 @@ const onFeature = async (searchWord: string) => {
   <!-- モーダル表示 -->
   <v-dialog v-model="dialog" max-width="800px">
     <v-img :src="selectedImage" alt="404 Error" max-height="600px" lazy></v-img>
+  </v-dialog>
+  <v-dialog v-model="showFeature" max-width="800px" class="d-flex justify-center align-center">
+    <v-card class="w-100 d-flex flex-column" style="max-height: 90vh">
+      <v-card-text class="pb-16 flex-grow-1 overflow-y-auto" style="max-height: 80vh">
+        <p class="text-h6">{{ item.name }}</p>
+        <p>{{ searchStore.feature }}</p>
+      </v-card-text>
+      <v-card-actions
+        class="pt-0 position-absolute w-100"
+        style="bottom: 0; left: 0; background: white"
+      >
+        <v-btn
+          color="grey-darken-1"
+          text="CLOSE"
+          variant="text"
+          @click="showFeature = false"
+        ></v-btn>
+      </v-card-actions>
+    </v-card>
   </v-dialog>
 </template>
 
