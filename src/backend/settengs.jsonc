@@ -37,6 +37,18 @@
       }
     }
   },
+  "agave_feature_index": "agave_feature_index",
+  "agave_feature_index_mapping": {
+    "mappings": {
+      "properties": {
+        "name": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
+        "feature": { "type": "text" }
+      }
+    }
+  },
   "query": {
     "size": 10000,
     "query": {}
