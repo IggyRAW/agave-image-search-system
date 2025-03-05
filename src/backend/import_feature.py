@@ -19,9 +19,9 @@ def import_feature():
         df = _load_excel(_get_excel_file(config.EXCEL))
         bulk_data = []
         for row in tqdm(df.itertuples()):
-            # featureがNaNの場合Noneに変換
+            # featureがNaNの場合空文字に変換
             feature = (
-                None
+                ""
                 if isinstance(row.feature, float) and math.isnan(row.feature)
                 else row.feature
             )
