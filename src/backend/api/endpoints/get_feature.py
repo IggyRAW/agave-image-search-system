@@ -29,7 +29,7 @@ def get_feature(
         response = es.search(config.AGAVE_FEATURE_INDEX, query_builder.build())
         response = response["hits"]["hits"]
         if response:
-            return response[0]["_source"]["feature"]
+            return response[0]["_source"]
         else:
             return ""
 

@@ -45,7 +45,22 @@
           "type": "text",
           "fields": { "keyword": { "type": "keyword" } }
         },
-        "feature": { "type": "text" }
+        "leaf_color": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
+        "leaf_type": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
+        "spine_color": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
+        "spine_type": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        }
       }
     }
   },

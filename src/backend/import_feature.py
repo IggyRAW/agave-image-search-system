@@ -20,23 +20,47 @@ def import_feature():
         bulk_data = []
         for row in tqdm(df.itertuples()):
             # featureがNaNの場合空文字に変換
-            feature = (
+            leaf_color = (
                 ""
-                if isinstance(row.feature, float) and math.isnan(row.feature)
-                else row.feature
+                if isinstance(row.leaf_color, float)
+                and math.isnan(row.leaf_color)
+                else row.leaf_color
             )
+            leaf_type = (
+                ""
+                if isinstance(row.leaf_type, float)
+                and math.isnan(row.leaf_type)
+                else row.leaf_type
+            )
+            spine_color = (
+                ""
+                if isinstance(row.spine_color, float)
+                and math.isnan(row.spine_color)
+                else row.spine_color
+            )
+
+            spine_types = [
+                s
+                for s in [row.spine_type, row._6, row._7]
+                if not (isinstance(s, float) and math.isnan(s))
+            ]
+
             doc = {
                 "_index": config.AGAVE_FEATURE_INDEX,
                 "_source": {
                     "name": row.name,
-                    "feature": feature,
+                    "leaf_color": leaf_color,
+                    "leaf_type": leaf_type,
+                    "spine_color": spine_color,
+                    "spine_type": spine_types,
                 },
             }
 
             builder = ESQueryBuilder()
-            builder.set_bool()
-            builder.set_should()
-            builder.create_search_name_query("name", row.name)
+            builder.set_name_term(row.name)
+            # builder.set_bool()
+            # builder.set_should()
+            # builder.create_search_name_query("name", row.name)
             response = es.search(config.AGAVE_FEATURE_INDEX, builder.build())
             if _check_doc(response["hits"]["hits"], doc["_source"]):
                 bulk_data.append(doc)
@@ -64,7 +88,7 @@ def _get_excel_file(path: str, extensions=("xlsx")):
 
 
 def _load_excel(path: str):
-    return pd.read_excel(path, sheet_name="Sheet2", engine="openpyxl")
+    return pd.read_excel(path, sheet_name="Sheet3", engine="openpyxl")
 
 
 def _check_doc(response, doc: dict) -> bool:
