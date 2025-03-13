@@ -4,19 +4,22 @@ import { defineStore } from 'pinia'
 import { getSearchListByProvider } from '@/api/getProviders'
 import { initItem } from '@/api/types/initItem'
 import { initialized } from '@/api/init'
-import { getFeature } from '@/api/getFeature'
+import { getFeature, getSimilerSearch } from '@/api/getFeature'
+import { type FeatureModel } from '@/api/types/feature'
 
 export const useSearchStore = defineStore('search', {
   state: () => ({
     searchWord: '',
-    searchType: 0, // 0:標準検索 1:ネームド検索 2:提供者検索
+    searchType: 0, // 0:標準検索 1:ネームド検索 2:提供者検索 3:類似度検索
     currentPage: 1,
     totalPage: 0,
     limit: 18,
     searchList: initItem as CardItemModel[],
     namedList: [] as NamedModel[],
     rankingList: [] as string[],
-    feature: '',
+    feature: {} as FeatureModel,
+    activeFeature: null as number | null,
+    lastSimilerName: '' as string,
   }),
 
   actions: {
@@ -44,6 +47,7 @@ export const useSearchStore = defineStore('search', {
     async fetchSearchList() {
       try {
         console.log(`検索ワード: ${this.searchWord}, ページ: ${this.currentPage}`)
+        this.activeFeature = null
 
         let data
         if (this.searchType === 0) {
@@ -72,9 +76,32 @@ export const useSearchStore = defineStore('search', {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     },
 
+    toggleFeature(index: number) {
+      this.activeFeature = this.activeFeature === index ? null : index
+    },
+
     async fetchFeature(searchWord: string) {
       try {
         this.feature = await getFeature(searchWord)
+      } catch (err) {
+        console.error('エラー', err)
+      }
+    },
+
+    async fetchSimilerSearch() {
+      try {
+        this.activeFeature = null
+        this.setSearchType(3)
+        this.lastSimilerName = this.feature.name
+        const data = await getSimilerSearch(this.feature)
+
+        // トータルページ数の計算
+        this.totalPage = 0
+
+        // 検索結果リストの反映
+        this.searchList = data.search_list
+
+        this.scrollToTop()
       } catch (err) {
         console.error('エラー', err)
       }
