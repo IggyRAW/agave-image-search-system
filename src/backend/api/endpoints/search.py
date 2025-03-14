@@ -144,14 +144,20 @@ def search_providers(
 @router.get("/get/similer_search")
 def get_similer_search(
     feature: Optional[str] = Query(None),
+    page: int = 0,
+    limit: int = 18,
     es: ElasticsearchManager = Depends(get_elasticsearch_manager),
 ):
     """
     類似検索API
     """
     try:
+        offset = (page - 1) * limit
+
         if feature:
             feature_data = json.loads(feature)
+            logger.info(f"類似検索：{feature_data["name"]}")
+
             feature_query_builder = ESQueryBuilder()
             feature_query_builder.set_source(["name"])
             feature_query_builder.set_bool()
@@ -178,11 +184,16 @@ def get_similer_search(
         top_k = [
             res["_source"]["name"] for res in response["hits"]["hits"][:10]
         ]
+        logger.info(f"Top10:{top_k}")
 
         search_query_builder = ESQueryBuilder()
         search_query_builder.set_terms("name", top_k)
 
-        response = es.search(config.AGAVE_INDEX, search_query_builder.build())
+        query = search_query_builder.build()
+        query["from"] = offset
+        query["size"] = limit
+
+        response = es.search(config.AGAVE_INDEX, query)
         total = response["hits"]["total"]["value"]
         response = response["hits"]["hits"]
 
