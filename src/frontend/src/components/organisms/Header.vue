@@ -19,13 +19,20 @@ onMounted(async () => {
   }
 })
 
+// 全検索
+async function onAllSearch() {
+  searchStore.setSearchWord('')
+  searchStore.setSearchType(0)
+  searchStore.fetchSearchList()
+  closeDrawer()
+}
+
 // ネームド検索処理
 async function onSearchByNamed(named: string) {
   searchStore.setSearchWord(named)
   searchStore.setSearchType(1)
   searchStore.fetchSearchList()
-  drawer.value = false
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  closeDrawer()
 }
 
 // 提供者検索処理
@@ -33,8 +40,13 @@ async function onSearchByProvider(provider: string) {
   searchStore.setSearchWord(provider)
   searchStore.setSearchType(2)
   searchStore.fetchSearchList()
+  closeDrawer()
+}
+
+// ドロワーを閉じる
+function closeDrawer() {
   drawer.value = false
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  searchStore.scrollToTop()
 }
 </script>
 
@@ -51,6 +63,7 @@ async function onSearchByProvider(provider: string) {
 
   <v-navigation-drawer v-model="drawer" location="right" temporary>
     <v-list>
+      <v-list-item title="全アガベ検索" value="contact" @click="onAllSearch"></v-list-item>
       <v-list-group>
         <template v-slot:activator="{ props }">
           <v-list-item v-bind="props" title="ネームド一覧"> </v-list-item>

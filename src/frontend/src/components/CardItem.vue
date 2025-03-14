@@ -25,13 +25,16 @@ const onSearch = (searchWord: string) => {
   searchStore.scrollToTop()
 }
 
+// 特徴データ取得
 const onFeature = async (item: CardItemModel) => {
   searchStore.toggleFeature(props.index)
   await searchStore.fetchFeature(item.name)
 }
 
+// 類似検索
 const onSimilerSearch = async () => {
-  await searchStore.fetchSimilerSearch()
+  searchStore.setSearchType(3)
+  await searchStore.fetchSearchList()
 }
 </script>
 

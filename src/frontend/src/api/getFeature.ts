@@ -29,11 +29,15 @@ function getDefaultFeatureModel(search_word: string): FeatureModel {
 
 export const getSimilerSearch = async (
   feature: FeatureModel,
+  page: number = 1,
+  limit: number = 18,
 ): Promise<{ total: number; search_list: CardItemModel[] }> => {
   return axios
     .get('/api/get/similer_search', {
       params: {
         feature: JSON.stringify(feature),
+        page: page,
+        limit: limit,
       },
     })
     .then((res: AxiosResponse<{ total: number; search_list: CardItemModel[] }>) => {

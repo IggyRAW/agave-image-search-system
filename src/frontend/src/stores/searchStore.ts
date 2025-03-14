@@ -51,11 +51,18 @@ export const useSearchStore = defineStore('search', {
 
         let data
         if (this.searchType === 0) {
+          // 標準検索
           data = await getSearchList(this.searchWord, this.currentPage, this.limit)
         } else if (this.searchType === 1) {
+          // ネームド検索
           data = await getSearchListByNamed(this.searchWord, this.currentPage, this.limit)
-        } else {
+        } else if (this.searchType === 2) {
+          // 提供者検索
           data = await getSearchListByProvider(this.searchWord, this.currentPage, this.limit)
+        } else {
+          // 類似検索
+          this.lastSimilerName = this.feature.name
+          data = await getSimilerSearch(this.feature, this.currentPage, this.limit)
         }
 
         // トータルページ数の計算
@@ -83,25 +90,6 @@ export const useSearchStore = defineStore('search', {
     async fetchFeature(searchWord: string) {
       try {
         this.feature = await getFeature(searchWord)
-      } catch (err) {
-        console.error('エラー', err)
-      }
-    },
-
-    async fetchSimilerSearch() {
-      try {
-        this.activeFeature = null
-        this.setSearchType(3)
-        this.lastSimilerName = this.feature.name
-        const data = await getSimilerSearch(this.feature)
-
-        // トータルページ数の計算
-        this.totalPage = 0
-
-        // 検索結果リストの反映
-        this.searchList = data.search_list
-
-        this.scrollToTop()
       } catch (err) {
         console.error('エラー', err)
       }
