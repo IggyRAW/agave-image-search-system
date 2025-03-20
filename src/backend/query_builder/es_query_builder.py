@@ -40,11 +40,7 @@ class ESQueryBuilder:
                     {"term": {f"{field}.keyword": term}}
                 )
         else:
-            self.set_bool()
-            self.set_should()
-            self.query["query"]["bool"]["should"].append(
-                {"term": {f"{field}.keyword": term}}
-            )
+            self.query["query"]["term"] = {f"{field}.keyword": term}
 
     def set_terms(self, field: str, term: list):
         if "bool" in self.query["query"]:
