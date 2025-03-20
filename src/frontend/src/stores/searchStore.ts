@@ -77,6 +77,8 @@ export const useSearchStore = defineStore('search', {
 
         // 検索結果リストの反映
         this.searchList = data.search_list
+
+        this.scrollToTop()
       } catch (error) {
         console.error('検索エラー：', error)
       }
@@ -84,6 +86,7 @@ export const useSearchStore = defineStore('search', {
 
     nextPage() {
       this.fetchSearchList()
+      this.scrollToTop()
     },
 
     scrollToTop() {

@@ -21,8 +21,6 @@ const onSearch = (searchWord: string) => {
   searchStore.setSearchWord(searchWord)
   searchStore.setSearchType(1)
   searchStore.fetchSearchList()
-
-  searchStore.scrollToTop()
 }
 
 // 特徴データ取得
