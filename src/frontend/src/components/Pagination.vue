@@ -15,7 +15,6 @@ const paginationVisible = computed(() => {
 
 const loadMore = () => {
   searchStore.nextPage()
-  searchStore.scrollToTop()
 }
 </script>
 
