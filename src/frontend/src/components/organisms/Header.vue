@@ -4,6 +4,7 @@ import { getNamedList } from '@/api/getNamedList'
 import { getProviders, type ProviderModel } from '@/api/getProviders'
 import { MYURL, BEATGARDENURL } from '@/environment'
 import { useSearchStore } from '@/stores/searchStore'
+import { spineTypeList } from '@/api/types/spineType'
 
 const searchStore = useSearchStore()
 const drawer = ref(false)
@@ -39,6 +40,14 @@ async function onSearchByNamed(named: string) {
 async function onSearchByProvider(provider: string) {
   searchStore.setSearchWord(provider)
   searchStore.setSearchType(2)
+  searchStore.fetchSearchList()
+  closeDrawer()
+}
+
+// 鋸歯の特徴検索
+async function onSearchSpineType(spineType: string) {
+  searchStore.setSearchWord(spineType)
+  searchStore.setSearchType(4)
   searchStore.fetchSearchList()
   closeDrawer()
 }
@@ -97,6 +106,18 @@ function closeDrawer() {
           :key="ranking"
           :title="`${index + 1}位 ${ranking}`"
           @click="onSearchByNamed(ranking)"
+        ></v-list-item>
+      </v-list-group>
+
+      <v-list-group>
+        <template v-slot:activator="{ props }">
+          <v-list-item v-bind="props" title="鋸歯の特徴で検索"> </v-list-item>
+        </template>
+        <v-list-item
+          v-for="spineType in spineTypeList"
+          :key="spineType"
+          :title="spineType"
+          @click="onSearchSpineType(spineType)"
         ></v-list-item>
       </v-list-group>
 

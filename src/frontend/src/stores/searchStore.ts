@@ -6,11 +6,12 @@ import { initItem } from '@/api/types/initItem'
 import { initialized } from '@/api/init'
 import { getFeature, getSimilerSearch } from '@/api/getFeature'
 import { type FeatureModel } from '@/api/types/feature'
+import { getSpineType } from '@/api/getSpineType'
 
 export const useSearchStore = defineStore('search', {
   state: () => ({
     searchWord: '',
-    searchType: 0, // 0:標準検索 1:ネームド検索 2:提供者検索 3:類似度検索
+    searchType: 0, // 0:標準検索 1:ネームド検索 2:提供者検索 3:類似度検索 4:鋸歯の特徴検索
     currentPage: 1,
     totalPage: 0,
     limit: 18,
@@ -29,7 +30,10 @@ export const useSearchStore = defineStore('search', {
     },
 
     setSearchType(type: number) {
-      this.searchType = type
+      if ((this, this.searchType !== type)) {
+        this.searchType = type
+        this.currentPage = 1
+      }
     },
 
     setTotalPage(totalPage: number) {
@@ -59,10 +63,13 @@ export const useSearchStore = defineStore('search', {
         } else if (this.searchType === 2) {
           // 提供者検索
           data = await getSearchListByProvider(this.searchWord, this.currentPage, this.limit)
-        } else {
+        } else if (this.searchType === 3) {
           // 類似検索
           this.lastSimilerName = this.feature.name
           data = await getSimilerSearch(this.feature, this.currentPage, this.limit)
+        } else {
+          // 鋸歯の特徴検索
+          data = await getSpineType(this.searchWord, this.currentPage, this.limit)
         }
 
         // トータルページ数の計算
