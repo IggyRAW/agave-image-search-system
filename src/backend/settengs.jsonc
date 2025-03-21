@@ -37,6 +37,33 @@
       }
     }
   },
+  "agave_feature_index": "agave_feature_index",
+  "agave_feature_index_mapping": {
+    "mappings": {
+      "properties": {
+        "name": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
+        "leaf_color": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
+        "leaf_type": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
+        "spine_color": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        },
+        "spine_type": {
+          "type": "text",
+          "fields": { "keyword": { "type": "keyword" } }
+        }
+      }
+    }
+  },
   "query": {
     "size": 10000,
     "query": {}

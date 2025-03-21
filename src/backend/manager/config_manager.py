@@ -17,5 +17,9 @@ class ConfigManager:
         self.SEARCH_COUNT_INDEX_MAPPING = self.settings.get(
             "search_count_index_mapping"
         )
+        self.AGAVE_FEATURE_INDEX = self.settings.get("agave_feature_index")
+        self.AGAVE_FEATURE_INDEX_MAPPING = self.settings.get(
+            "agave_feature_index_mapping"
+        )
         self.QUERY = self.settings.get("query")
         self.EXCEL = self.settings.get("excel")

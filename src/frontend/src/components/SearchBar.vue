@@ -82,7 +82,7 @@ const onSearch = () => {
       v-model="searchStore.searchWord"
       append-inner-icon="mdi-magnify"
       density="compact"
-      placeholder="キーワードを入力"
+      placeholder="検索したいアガベのネームを入力してください"
       variant="solo"
       hide-details
       single-line

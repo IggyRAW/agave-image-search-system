@@ -12,6 +12,9 @@ class ESQueryBuilder:
     def match_all(self):
         self.query["query"]["match_all"] = {}
 
+    def set_source(self, fields: list):
+        self.query["_source"] = fields
+
     def set_bool(self):
         self.query["query"]["bool"] = {}
 
@@ -24,6 +27,34 @@ class ESQueryBuilder:
             self.query["query"]["bool"]["should"].extend(query)
         else:
             self.query["query"]["bool"]["should"] = query
+
+    def set_term(self, field: str, term: str):
+        if "bool" in self.query["query"]:
+            if "should" in self.query["query"]["bool"]:
+                self.query["query"]["bool"]["should"].append(
+                    {"term": {f"{field}.keyword": term}}
+                )
+            else:
+                self.set_should()
+                self.query["query"]["bool"]["should"].append(
+                    {"term": {f"{field}.keyword": term}}
+                )
+        else:
+            self.query["query"]["term"] = {f"{field}.keyword": term}
+
+    def set_terms(self, field: str, term: list):
+        if "bool" in self.query["query"]:
+            if "should" in self.query["query"]["bool"]:
+                self.query["query"]["bool"]["should"].append(
+                    {"terms": {f"{field}.keyword": term}}
+                )
+            else:
+                self.set_should()
+                self.query["query"]["bool"]["should"].append(
+                    {"term": {f"{field}.keyword": term}}
+                )
+        else:
+            self.query["query"]["terms"] = {f"{field}.keyword": term}
 
     def set_name_term(self, name: str):
         self.query["query"]["term"] = {"name.keyword": name}

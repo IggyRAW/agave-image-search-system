@@ -30,10 +30,15 @@ class ElasticsearchManager:
         """
         インデックス作成
         """
-        indices = [config.AGAVE_INDEX, config.SEARCH_COUNT_INDEX]
+        indices = [
+            config.AGAVE_INDEX,
+            config.SEARCH_COUNT_INDEX,
+            config.AGAVE_FEATURE_INDEX,
+        ]
         mappings = [
             config.AGAVE_INDEX_MAPPING,
             config.SEARCH_COUNT_INDEX_MAPPING,
+            config.AGAVE_FEATURE_INDEX_MAPPING,
         ]
         for index, mapping in zip(indices, mappings):
             if not self.es.indices.exists(index=index):

@@ -48,28 +48,32 @@ onMounted(() => {
         <div v-if="searchStore.searchType == 0">
           <p>※部分一致検索なので他ネームドも含みます</p>
         </div>
+        <div v-if="searchStore.searchType == 3">
+          <p>類似検索：{{ searchStore.lastSimilerName }}</p>
+        </div>
         <v-row>
           <v-col
-            v-for="item in searchStore.searchList"
+            v-for="(item, index) in searchStore.searchList"
             :key="item.id"
             cols="6"
             xs="6"
-            sm="6"
+            sm="4"
             md="3"
             lg="2"
             xl="2"
           >
-            <CardItem :item="item" />
+            <CardItem :item="item" :index="index" />
           </v-col>
         </v-row>
       </div>
       <div v-else class="no-results">
         <p>該当するアガベがありませんでした</p>
-        <p>キーワードを変更して再検索してください</p>
       </div>
 
       <!-- ページネーション -->
-      <Pagination />
+      <div v-if="searchStore.totalPage > 1">
+        <Pagination />
+      </div>
 
       <!-- admax -->
       <div class="ad-container"></div>
